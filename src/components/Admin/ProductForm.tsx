@@ -43,6 +43,7 @@ export default function ProductForm({
     image_urls: initialData?.image_urls || [],
     
     // Pharmacy Specific
+    image_url: initialData?.image_url || initialData?.image_urls?.[0] || '',
     dosage_form: initialData?.dosage_form || 'Solid',
     therapeutic_class: initialData?.therapeutic_class || (category || ''),
     expiry_date: initialData?.expiry_date || '',
@@ -123,7 +124,11 @@ export default function ProductForm({
       }
     }
 
-    setFormData(prev => ({ ...prev, image_urls: newImageUrls }));
+    setFormData(prev => ({ 
+      ...prev, 
+      image_urls: newImageUrls,
+      image_url: prev.image_url || newImageUrls[0] || '' 
+    }));
     setUploading(false);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -166,8 +171,12 @@ export default function ProductForm({
       top_notes: formData.top_notes || null,
       middle_notes: formData.middle_notes || null,
       base_notes: formData.base_notes || null,
+      image_url: formData.image_url || formData.image_urls[0] || null,
+      image_urls: formData.image_urls,
       sku: undefined, // not in form but exists in table
     };
+
+    console.log('Final Payload for Supabase:', payload);
 
     let error;
     
