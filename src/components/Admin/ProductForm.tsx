@@ -59,7 +59,9 @@ export default function ProductForm({
       const { data } = await supabase.from('categories').select('*').order('name');
       setCategories(data || []);
       if (data && data.length > 0 && !formData.category_id) {
-        setFormData(prev => ({ ...prev, category_id: data[0].id }));
+        // Find the matching category ID if a category string is provided, otherwise fallback to the first element
+        const matchedCategory = data.find((c: any) => c.name === category);
+        setFormData(prev => ({ ...prev, category_id: matchedCategory ? matchedCategory.id : data[0].id }));
       }
     }
     fetchCategories();
@@ -173,7 +175,6 @@ export default function ProductForm({
       base_notes: formData.base_notes || null,
       image_url: formData.image_url || formData.image_urls[0] || null,
       image_urls: formData.image_urls,
-      sku: undefined, // not in form but exists in table
     };
 
     console.log('Final Payload for Supabase:', payload);
