@@ -35,7 +35,7 @@ export default function CheckoutPage() {
     e.preventDefault();
 
     // WhatsApp Number
-    const phoneNumber = '237670666946';
+    const phoneNumber = '18013740460';
 
     // Format Cart Items
     const itemsList = items
@@ -129,7 +129,7 @@ export default function CheckoutPage() {
                 <label className="form-label">Phone Number</label>
                 <input 
                   type="tel" name="phone" className="form-input" required 
-                  value={formData.phone} onChange={handleChange} placeholder="+237 6XX XXX XXX"
+                  value={formData.phone} onChange={handleChange} placeholder="+1 (801) 374-0460"
                 />
               </div>
               <div className="form-group full-width">

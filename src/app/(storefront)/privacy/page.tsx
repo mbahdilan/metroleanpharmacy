@@ -63,7 +63,7 @@ export default function PrivacyPolicy() {
           </p>
           <p style={{ fontWeight: 700, color: 'var(--primary)' }}>
             Email: broomuhams@gmail.com<br />
-            WhatsApp: +237670666946
+            WhatsApp: +1 (801) 374-0460
           </p>
         </section>
       </div>
