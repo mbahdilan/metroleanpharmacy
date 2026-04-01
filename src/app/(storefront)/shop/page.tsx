@@ -428,16 +428,16 @@ function ShopContent() {
         @media (max-width: 600px) {
           .products-grid { 
             grid-template-columns: 1fr 1fr !important; 
-            gap: 1rem; 
+            gap: 0.75rem; 
             width: 100%; 
-            margin-top: 2rem; /* Added margin for better clearance below sticky header */
+            margin: 2rem auto 0;
             padding: 0;
             grid-auto-rows: 1fr;
           }
-          .grid-container { padding: 40px 1rem 1rem; } /* Pushes content down to clear header */
+          .grid-container { padding: 40px 0.75rem 1rem; margin: 0; width: 100%; }
           .filter-dropdown-overlay { width: calc(100% - 2rem); left: 1rem; right: 1rem; }
           .shop-hero { height: 200px; }
-          .shop-main-layout { padding: 0 0 3rem; }
+          .shop-main-layout { padding: 0 !important; width: 100%; }
           .recommendations-section { padding: 3rem 1rem; }
         }
       `}</style>

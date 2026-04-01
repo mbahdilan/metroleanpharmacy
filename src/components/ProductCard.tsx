@@ -164,18 +164,22 @@ export default function ProductCard({ product }: { product: Product }) {
         /* Mobile Simplification */
         @media (max-width: 768px) {
           .stuffus-product-card { 
-            padding: 0.5rem; 
+            padding: 0; 
             border-radius: 20px; 
-            aspect-ratio: 1 / 1.35; 
+            aspect-ratio: 1 / 1.25; 
             height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
           }
           .category-tag, .star-icon, .card-rating, .card-actions { display: none !important; }
-          .card-image-wrapper { background: #f3f4f6; margin-bottom: 0.6rem; border-radius: 16px; height: 60%; width: 100%; flex: 0 0 auto; }
-          .card-title { font-size: 0.85rem; font-weight: 700; color: #1e293b; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; margin-top: 0.2rem; margin-bottom: 0.5rem; padding: 0 0.2rem; min-height: 2.4em; line-height: 1.2; }
-          .card-price { font-size: 0.95rem; margin-top: auto; font-weight: 800; color: var(--primary); padding: 0 0.2rem 0.4rem; }
+          .card-image-wrapper { background: #f3f4f6; margin-bottom: 0; border-radius: 0; height: 65%; width: 100%; flex: 0 0 auto; overflow: hidden; position: relative; }
+          .card-image-wrapper img { width: 100% !important; height: 100% !important; object-fit: cover !important; position: absolute; top: 0; left: 0; max-width: none !important; max-height: none !important; }
+          .card-title { font-size: 0.8rem; font-weight: 700; color: #1e293b; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; margin-top: 0.5rem; margin-bottom: 0.2rem; padding: 0 0.6rem; min-height: 2.2em; line-height: 1.1; }
+          .card-price { font-size: 0.9rem; margin-top: auto; font-weight: 800; color: var(--primary); padding: 0 0.6rem 0.6rem; }
           .card-info { flex: 1; display: flex; flex-direction: column; }
         }
       `}</style>
