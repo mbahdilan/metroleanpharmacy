@@ -430,11 +430,11 @@ function ShopContent() {
             grid-template-columns: 1fr 1fr !important; 
             gap: 1rem; 
             width: 100%; 
-            margin: 0;
+            margin-top: 2rem; /* Added margin for better clearance below sticky header */
             padding: 0;
             grid-auto-rows: 1fr;
           }
-          .grid-container { padding: 0 1rem; }
+          .grid-container { padding: 40px 1rem 1rem; } /* Pushes content down to clear header */
           .filter-dropdown-overlay { width: calc(100% - 2rem); left: 1rem; right: 1rem; }
           .shop-hero { height: 200px; }
           .shop-main-layout { padding: 0 0 3rem; }

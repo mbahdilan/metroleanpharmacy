@@ -166,17 +166,17 @@ export default function ProductCard({ product }: { product: Product }) {
           .stuffus-product-card { 
             padding: 0.5rem; 
             border-radius: 20px; 
-            aspect-ratio: 1 / 1.15; 
+            aspect-ratio: 1 / 1.35; 
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-start;
           }
           .category-tag, .star-icon, .card-rating, .card-actions { display: none !important; }
-          .card-image-wrapper { background: #f3f4f6; margin-bottom: 0.4rem; border-radius: 16px; flex: 1; min-height: 0; }
-          .card-title { font-size: 0.8rem; font-weight: 700; -webkit-line-clamp: 2; height: 2.2em; overflow: hidden; margin-bottom: 2px; padding: 0 0.2rem; }
-          .card-price { font-size: 0.85rem; margin: 0; font-weight: 800; padding: 0 0.2rem; }
-          .card-info { gap: 1px; display: flex; flex-direction: column; }
+          .card-image-wrapper { background: #f3f4f6; margin-bottom: 0.6rem; border-radius: 16px; height: 60%; width: 100%; flex: 0 0 auto; }
+          .card-title { font-size: 0.85rem; font-weight: 700; color: #1e293b; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; margin-top: 0.2rem; margin-bottom: 0.5rem; padding: 0 0.2rem; min-height: 2.4em; line-height: 1.2; }
+          .card-price { font-size: 0.95rem; margin-top: auto; font-weight: 800; color: var(--primary); padding: 0 0.2rem 0.4rem; }
+          .card-info { flex: 1; display: flex; flex-direction: column; }
         }
       `}</style>
 
