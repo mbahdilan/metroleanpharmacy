@@ -44,7 +44,10 @@ function ShopContent() {
       setProducts(prods || []);
       
       if (categorySlug) {
-        const matchingCat = categoryList.find(c => c.slug.toLowerCase() === categorySlug.toLowerCase());
+        const matchingCat = categoryList.find(c => 
+          c.slug.toLowerCase() === categorySlug.toLowerCase() || 
+          c.name.toLowerCase() === categorySlug.toLowerCase()
+        );
         if (matchingCat) {
           setSelectedCategory(matchingCat.id);
         }
