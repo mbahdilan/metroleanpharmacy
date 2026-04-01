@@ -153,7 +153,7 @@ function ShopContent() {
           text-align: center;
         }
         .hero-title {
-          font-size: 10rem;
+          font-size: clamp(3rem, 15vw, 10rem);
           font-weight: 900;
           color: rgba(255, 255, 255, 0.95);
           letter-spacing: -0.05em;
@@ -175,7 +175,7 @@ function ShopContent() {
           gap: 2rem;
         }
         .sub-header-left h2 { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 0; }
-        .search-area { position: relative; width: 450px; }
+        .search-area { position: relative; flex: 1; min-width: 0; }
         .search-area i { position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: #94a3b8; font-style: normal; }
         .search-input {
           width: 100%;
@@ -220,7 +220,8 @@ function ShopContent() {
           display: flex;
           align-items: center;
           gap: 1rem;
-          width: 550px;
+          flex: 1;
+          max-width: 550px;
         }
         .filter-toggle-btn {
           background: #f1f5f9;
@@ -305,27 +306,28 @@ function ShopContent() {
         .rec-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; }
         .rec-grid {
           display: grid;
-          grid-template-columns: repeat(5, 1fr);
-          gap: 1.5rem;
+          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+          gap: 1rem;
         }
 
         /* Newsletter CTA */
         .newsletter-cta {
           max-width: 1400px;
-          margin: 4rem auto 6rem;
+          margin: 2rem 1rem 4rem;
           background: #0f172a;
-          border-radius: 32px;
-          padding: 5rem 4rem;
+          border-radius: 20px;
+          padding: 3rem 2rem;
           color: white;
           display: flex;
+          flex-wrap: wrap;
           justify-content: space-between;
           align-items: center;
-          gap: 4rem;
+          gap: 2rem;
           overflow: hidden;
           position: relative;
         }
-        .news-content h2 { font-size: 2.5rem; font-weight: 800; margin-bottom: 1.5rem; }
-        .news-form { display: flex; gap: 1rem; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); width: 450px; }
+        .news-content h2 { font-size: clamp(1.5rem, 4vw, 2.5rem); font-weight: 800; margin-bottom: 1rem; }
+        .news-form { display: flex; gap: 0.75rem; background: rgba(255,255,255,0.05); padding: 6px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 450px; }
         .news-input { background: none; border: none; padding: 0.75rem 1.5rem; color: white; width: 100%; outline: none; font-size: 0.9rem; }
         .news-btn { background: white; color: #0f172a; border: none; padding: 0.75rem 2rem; border-radius: 50px; font-weight: 800; cursor: pointer; }
 
@@ -337,11 +339,17 @@ function ShopContent() {
         }
         @media (max-width: 900px) {
           .products-grid { grid-template-columns: repeat(3, 1fr); }
+          .shop-hero { height: 280px; margin-top: 72px; }
+          .shop-sub-header { padding: 1.5rem 1rem; flex-direction: column; align-items: stretch; gap: 1rem; }
+          .search-container { max-width: 100%; }
+          .rec-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
         }
         @media (max-width: 600px) {
-          .products-grid { grid-template-columns: repeat(2, 1fr); }
+          .products-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
           .filter-dropdown-overlay { width: calc(100% - 2rem); left: 1rem; right: 1rem; }
-          .hero-title { font-size: 4rem; }
+          .shop-hero { height: 200px; }
+          .shop-main-layout { padding: 0 1rem 3rem; }
+          .recommendations-section { padding: 3rem 1rem; }
         }
       `}</style>
 

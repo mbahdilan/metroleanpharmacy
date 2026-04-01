@@ -104,7 +104,7 @@ export default async function HomePage() {
         padding: '6rem 2rem',
         borderTop: '1px solid rgba(255,255,255,0.1)'
       }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '4rem 6rem' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '3rem 4rem' }}>
           {[
             { 
               title: 'Approved Pharmacy', 

@@ -30,11 +30,11 @@ export default function AboutPage() {
   return (
     <div className="about-page" style={{ paddingBottom: '5rem' }}>
       {/* Hero Section */}
-      <section style={{ height: '60vh', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', background: '#004a99' }}>
+      <section style={{ minHeight: '40vh', height: 'auto', padding: '100px 0 60px', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', background: '#004a99' }}>
         <img src="/images/about/hero.png" alt="Pharmacy Hero" style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover', opacity: 0.4 }} />
-        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', color: 'white', padding: '0 1rem' }}>
-          <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 4rem)', fontWeight: 900, marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '2px' }}>About Us</h1>
-          <p style={{ fontSize: '1.2rem', maxWidth: '800px', margin: '0 auto', fontWeight: 500, opacity: 0.9 }}>
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', color: 'white', padding: '0 1rem', maxWidth: '800px' }}>
+          <h1 style={{ fontSize: 'clamp(2.2rem, 8vw, 4rem)', fontWeight: 900, marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '2px', lineClamp: 1.2 }}>About Us</h1>
+          <p style={{ fontSize: 'clamp(1rem, 3vw, 1.2rem)', margin: '0 auto', fontWeight: 500, opacity: 0.9 }}>
             Providing High-Quality Products And Excellent Services Since 2004
           </p>
         </div>

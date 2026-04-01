@@ -42,7 +42,7 @@ export default function ContactPage() {
           }}>
             <h2 style={{ fontSize: '1.75rem', color: 'var(--primary-dark)', marginBottom: '2rem' }}>Send us a Message</h2>
             <form style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem' }}>
                 <div className="form-group">
                   <label className="form-label" style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>First Name</label>
                   <input type="text" className="form-input" style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-main)' }} placeholder="John" />
