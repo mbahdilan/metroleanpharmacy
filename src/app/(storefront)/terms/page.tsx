@@ -36,7 +36,7 @@ export default function TermsOfService() {
             Upon placing an order, you will receive a confirmation email and be redirected to our WhatsApp desk. 
           </p>
           <ul style={{ lineHeight: 1.8, color: 'var(--text-secondary)', paddingLeft: '1.5rem', marginBottom: '1rem' }}>
-            <li>Official payment links (Zelle, Crypto, etc.) are provided via the admin email (broomuhams@gmail.com) following clinical verification.</li>
+            <li>Official payment links (Zelle, Crypto, etc.) are provided via the admin email (office@metrolean.com) following clinical verification.</li>
             <li>Orders are only processed once payment has been cleared by our financial department.</li>
             <li>Metrolean Pharmacy reserved the right to cancel any order that fails clinical verification.</li>
           </ul>
@@ -62,7 +62,7 @@ export default function TermsOfService() {
             Questions regarding these Terms of Service should be directed to:
           </p>
           <p style={{ fontWeight: 700, color: 'var(--primary)' }}>
-            Email: broomuhams@gmail.com<br />
+            Email: office@metrolean.com<br />
             WhatsApp: +1 (801) 374-0460
           </p>
         </section>

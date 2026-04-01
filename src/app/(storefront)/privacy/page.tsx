@@ -62,7 +62,7 @@ export default function PrivacyPolicy() {
             If you have any questions regarding this privacy policy, you may contact our clinical desk at:
           </p>
           <p style={{ fontWeight: 700, color: 'var(--primary)' }}>
-            Email: broomuhams@gmail.com<br />
+            Email: office@metrolean.com<br />
             WhatsApp: +1 (801) 374-0460
           </p>
         </section>

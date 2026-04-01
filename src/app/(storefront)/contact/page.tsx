@@ -91,7 +91,7 @@ export default function ContactPage() {
               </div>
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <span style={{ fontSize: '1.5rem' }}>✉️</span>
-                <p style={{ color: 'var(--text-secondary)' }}>support@metrolean.com</p>
+                <p style={{ color: 'var(--text-secondary)' }}>office@metrolean.com</p>
               </div>
             </div>
 
