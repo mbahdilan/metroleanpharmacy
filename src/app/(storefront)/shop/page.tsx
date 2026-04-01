@@ -426,10 +426,18 @@ function ShopContent() {
           .rec-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
         }
         @media (max-width: 600px) {
-          .products-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+          .products-grid { 
+            grid-template-columns: 1fr 1fr !important; 
+            gap: 1rem; 
+            width: 100%; 
+            margin: 0;
+            padding: 0;
+            grid-auto-rows: 1fr;
+          }
+          .grid-container { padding: 0 1rem; }
           .filter-dropdown-overlay { width: calc(100% - 2rem); left: 1rem; right: 1rem; }
           .shop-hero { height: 200px; }
-          .shop-main-layout { padding: 0 1rem 3rem; }
+          .shop-main-layout { padding: 0 0 3rem; }
           .recommendations-section { padding: 3rem 1rem; }
         }
       `}</style>
