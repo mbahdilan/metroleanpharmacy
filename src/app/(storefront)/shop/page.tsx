@@ -162,6 +162,86 @@ function ShopContent() {
           pointer-events: none;
           text-transform: uppercase;
         }
+
+        /* --- New Mobile Header (Matches Nike Image) --- */
+        .mobile-shop-header {
+          display: none;
+          padding: 1.5rem 1rem 0.5rem 1rem;
+          flex-direction: column;
+          gap: 1.5rem;
+          background: white;
+          position: sticky;
+          top: 80px; /* Below navbar */
+          z-index: 50;
+        }
+
+        .mobile-search-row {
+          display: flex;
+          gap: 0.75rem;
+          align-items: center;
+        }
+
+        .mobile-search-input-wrapper {
+          flex: 1;
+          position: relative;
+        }
+
+        .mobile-search-input {
+          width: 100%;
+          background: #f3f4f6;
+          border: 1px solid #e5e7eb;
+          border-radius: 16px;
+          padding: 0.85rem 1.25rem;
+          font-size: 0.95rem;
+          font-weight: 500;
+          color: #1e293b;
+          outline: none;
+        }
+
+        .mobile-search-btn {
+          width: 52px;
+          height: 52px;
+          background: var(--primary);
+          color: white;
+          border: none;
+          border-radius: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(0, 74, 153, 0.2);
+        }
+
+        .mobile-category-nav {
+          display: flex;
+          gap: 0.85rem;
+          overflow-x: auto;
+          padding-bottom: 0.5rem;
+          padding-top: 0.5rem;
+          scrollbar-width: none; /* Hide scrollbar Firefox */
+        }
+
+        .mobile-category-nav::-webkit-scrollbar { display: none; } /* Hide scrollbar Chrome/Safari */
+
+        .mobile-cat-pill {
+          padding: 0.6rem 1.4rem;
+          border-radius: 10px;
+          font-size: 0.85rem;
+          font-weight: 700;
+          white-space: nowrap;
+          border: 1px solid #e5e7eb;
+          background: white;
+          color: #64748b;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .mobile-cat-pill.active {
+          background: var(--primary);
+          color: white;
+          border-color: var(--primary);
+        }
+
         
         /* Secondary Header */
         .shop-sub-header {
@@ -339,8 +419,9 @@ function ShopContent() {
         }
         @media (max-width: 900px) {
           .products-grid { grid-template-columns: repeat(3, 1fr); }
-          .shop-hero { height: 280px; margin-top: 72px; }
-          .shop-sub-header { padding: 1.5rem 1rem; flex-direction: column; align-items: stretch; gap: 1rem; }
+          .shop-hero { display: none !important; }
+          .shop-sub-header { display: none !important; }
+          .mobile-shop-header { display: flex; padding: 1rem; }
           .search-container { max-width: 100%; }
           .rec-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
         }
@@ -353,8 +434,48 @@ function ShopContent() {
         }
       `}</style>
 
+      {/* Mobile Top Header (Nike Style) */}
+      <div className="mobile-shop-header">
+        <div className="mobile-search-row">
+          <div className="mobile-search-input-wrapper">
+            <input 
+              type="text" 
+              className="mobile-search-input" 
+              placeholder="Search Pharmacy..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <button className="mobile-search-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="mobile-category-nav">
+          <div 
+            className={`mobile-cat-pill ${selectedCategory === 'all' ? 'active' : ''}`}
+            onClick={() => setSelectedCategory('all')}
+          >
+            All
+          </div>
+          {categories.map(cat => (
+            <div 
+              key={cat.id} 
+              className={`mobile-cat-pill ${selectedCategory === cat.id ? 'active' : ''}`}
+              onClick={() => setSelectedCategory(cat.id)}
+            >
+              {cat.name}
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Desktop Hero Section */}
       <section className="shop-hero">
+
         <img src="/images/shop/shop-hero-bg.jpg" className="hero-bg" alt="Metrolean Pharmacy" />
         <div className="hero-content">
           <h1 className="hero-title">Shop</h1>

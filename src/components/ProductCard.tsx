@@ -161,6 +161,15 @@ export default function ProductCard({ product }: { product: Product }) {
           background: #1e293b;
           transform: scale(1.02);
         }
+        /* Mobile Simplification */
+        @media (max-width: 768px) {
+          .stuffus-product-card { padding: 0.5rem; border-radius: 20px; }
+          .category-tag, .card-rating, .card-actions { display: none !important; }
+          .card-image-wrapper { background: #f3f4f6; margin-bottom: 0.5rem; border-radius: 16px; }
+          .card-title { font-size: 0.85rem; height: auto; -webkit-line-clamp: 1; margin-bottom: 2px; padding: 0 0.2rem; }
+          .card-price { font-size: 0.9rem; margin: 0; font-weight: 800; padding: 0 0.2rem; }
+          .card-info { gap: 1px; }
+        }
       `}</style>
 
       <Link href={`/shop/${product.slug}`} className="stuffus-card-link-wrapper" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', height: '100%' }}>
