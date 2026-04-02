@@ -28,6 +28,8 @@ function ShopContent() {
   const [selectedClinicals, setSelectedClinicals] = useState<string[]>([]);
   const [selectedTherapeutics, setSelectedTherapeutics] = useState<string[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
 
   const searchParams = useSearchParams();
   const categorySlug = searchParams.get('category');
@@ -58,6 +60,27 @@ function ShopContent() {
     fetchData();
   }, [categorySlug]);
 
+  // Responsive items per page detection
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width < 600) setItemsPerPage(8);
+      else if (width < 1200) setItemsPerPage(12);
+      else setItemsPerPage(15);
+    };
+    
+    // Set initial
+    handleResize();
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Reset to page 1 on filter or search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, searchTerm, sortBy, priceRange, selectedDosageForms, selectedVolumes, selectedClinicals, selectedTherapeutics]);
+
   const filteredAndSorted = products
     .filter(p => {
       const matchesCategory = selectedCategory === 'all' || p.category_id === selectedCategory;
@@ -80,6 +103,12 @@ function ShopContent() {
       if (sortBy === 'newest') return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       return 0;
     });
+
+  const totalPages = Math.ceil(filteredAndSorted.length / itemsPerPage);
+  const paginatedProducts = filteredAndSorted.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const toggleDosageForm = (form: string) => {
     setSelectedDosageForms(prev => 
@@ -607,6 +636,23 @@ function ShopContent() {
             </div>
           </div>
           <div className="filter-section">
+            <span className="filter-title">Show</span>
+            <select 
+              className="search-input" 
+              style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '12px', fontSize: '0.85rem' }}
+              value={itemsPerPage}
+              onChange={(e) => setItemsPerPage(parseInt(e.target.value))}
+            >
+              <option value="8">8 per page</option>
+              <option value="12">12 per page</option>
+              <option value="15">15 per page</option>
+              <option value="24">24 per page</option>
+              <option value="48">48 per page</option>
+              <option value="96">96 per page</option>
+            </select>
+          </div>
+
+          <div className="filter-section">
             <span className="filter-title">Clinical Division</span>
             <div className="tag-list" style={{ gap: '0.5rem', display: 'flex', flexWrap: 'wrap', flexDirection: 'row' }}>
               {Array.from(new Set(products.map(p => p.scent_family).filter(Boolean))).map(clinical => (
@@ -657,19 +703,64 @@ function ShopContent() {
           ) : (
             <>
               <div className="products-grid">
-                {filteredAndSorted.map(product => (
+                {paginatedProducts.map(product => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
               
-              {/* Reference Style Pagination placeholder */}
-              <div className="pagination" style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2rem' }}>
-                <span style={{ fontWeight: 800, color: '#0f172a' }}>1</span>
-                <span style={{ fontWeight: 600, color: '#94a3b8' }}>2</span>
-                <span style={{ fontWeight: 600, color: '#94a3b8' }}>3</span>
-                <span style={{ fontWeight: 600, color: '#94a3b8' }}>...</span>
-                <span style={{ fontWeight: 600, color: '#94a3b8' }}>Next →</span>
-              </div>
+              {/* Reference Style Pagination functional */}
+              {totalPages > 1 && (
+                <div className="pagination" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', marginTop: '4rem' }}>
+                  <button 
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="pagination-btn"
+                    style={{ background: 'none', border: 'none', padding: '0.5rem', cursor: 'pointer', opacity: currentPage === 1 ? 0.3 : 1, fontWeight: 700, color: '#94a3b8' }}
+                  >
+                    ← Previous
+                  </button>
+                  
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => {
+                    // Simple logic to show only relevant pages if there are many
+                    if (totalPages > 7) {
+                      if (page !== 1 && page !== totalPages && (page < currentPage - 1 || page > currentPage + 1)) {
+                        if (page === currentPage - 2 || page === currentPage + 2) return <span key={page}>...</span>;
+                        return null;
+                      }
+                    }
+                    
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
+                        style={{
+                          width: '40px',
+                          height: '40px',
+                          borderRadius: '50%',
+                          border: 'none',
+                          background: currentPage === page ? '#0f172a' : 'transparent',
+                          color: currentPage === page ? 'white' : '#94a3b8',
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        {page}
+                      </button>
+                    )
+                  })}
+                  
+                  <button 
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="pagination-btn"
+                    style={{ background: 'none', border: 'none', padding: '0.5rem', cursor: 'pointer', opacity: currentPage === totalPages ? 0.3 : 1, fontWeight: 700, color: '#0f172a' }}
+                  >
+                    Next →
+                  </button>
+                </div>
+              )}
             </>
           )}
         </div>
