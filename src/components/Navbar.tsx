@@ -30,7 +30,7 @@ export default function Navbar() {
   return (
     <header className={`navbar-container ${isHidden ? 'navbar-hidden' : ''}`}>
       <nav className="navbar">
-        <div className="navbar-inner" style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className="navbar-inner">
           <Link href="/" className="navbar-brand">
             <img src="/images/logo-mck.png.jpeg" alt="Metrolean Pharmacy Logo" className="navbar-logo" />
             <div className="navbar-title-container">
