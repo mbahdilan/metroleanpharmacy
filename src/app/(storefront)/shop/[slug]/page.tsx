@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, use } from 'react';
+import { useEffect, useState, use, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase, Product, Category } from '@/lib/supabase';
@@ -23,6 +23,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   const [isDescExpanded, setIsDescExpanded] = useState(false);
   const { addToCart, setCartOpen } = useCart();
   const router = useRouter();
+  
+  const imgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -72,6 +74,35 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   const handleImageSelect = (url: string, idx: number) => {
     setSelectedImage(url);
     setSelectedImageIndex(idx);
+    
+    // Scroll to the indexed image
+    if (imgRef.current) {
+      const scrollWidth = imgRef.current.offsetWidth;
+      imgRef.current.scrollTo({
+        left: scrollWidth * idx,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const container = e.currentTarget;
+    const scrollLeft = container.scrollLeft;
+    const itemWidth = container.offsetWidth;
+    const newIdx = Math.round(scrollLeft / itemWidth);
+    if (newIdx !== selectedImageIndex) {
+      setSelectedImageIndex(newIdx);
+    }
+  };
+
+  const handlePrev = () => {
+    const newIdx = Math.max(0, selectedImageIndex - 1);
+    handleImageSelect(images[newIdx], newIdx);
+  };
+
+  const handleNext = () => {
+    const newIdx = Math.min(images.length - 1, selectedImageIndex + 1);
+    handleImageSelect(images[newIdx], newIdx);
   };
 
   const handleAddToCart = () => {
@@ -127,16 +158,58 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             <span className="pdp-sku-badge">{product.sku}</span>
           )}
 
-          <div className="pdp-main-img-box">
-            {selectedImage ? (
-              <img src={selectedImage} alt={product.name} />
+          <div 
+            className="pdp-main-img-box" 
+            ref={imgRef}
+            onScroll={handleScroll}
+            style={{ 
+              overflowX: images.length > 1 ? 'auto' : 'hidden',
+              scrollSnapType: 'x mandatory',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: images.length > 1 ? 'flex-start' : 'center',
+              scrollBehavior: 'smooth',
+              gap: 0,
+              padding: 0
+            }}
+          >
+            {images.length > 0 ? (
+              images.map((url, i) => (
+                <div key={i} className="pdp-slide">
+                  <img src={url} alt={`${product.name} - view ${i + 1}`} />
+                </div>
+              ))
             ) : (
-              <span className="pdp-icon-fallback">{icon}</span>
+              <div className="pdp-slide">
+                <span className="pdp-icon-fallback">{icon}</span>
+              </div>
             )}
           </div>
 
+          {/* Navigation Arrows */}
+          {images.length > 1 && (
+            <>
+              <button 
+                className="pdp-nav-arrow left" 
+                onClick={handlePrev}
+                disabled={selectedImageIndex === 0}
+                aria-label="Previous image"
+              >
+                ‹
+              </button>
+              <button 
+                className="pdp-nav-arrow right" 
+                onClick={handleNext}
+                disabled={selectedImageIndex === images.length - 1}
+                aria-label="Next image"
+              >
+                ›
+              </button>
+            </>
+          )}
+
           {/* Carousel Dots */}
-          {images.length > 0 && (
+          {images.length > 1 && (
             <div className="pdp-carousel-dots">
               {images.map((url, i) => (
                 <button
