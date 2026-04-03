@@ -1,58 +1,111 @@
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 
-// Initialize Resend with a placeholder. 
-// USER: Please update this in your .env.local file as RESEND_API_KEY=re_your_key
-const resend = new Resend(process.env.RESEND_API_KEY || 're_123456789');
+// Initialize Resend with the API key from environment variables
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   try {
     const { formData, items, totalPrice, selectedPayment } = await req.json();
 
     const itemsListHtml = items
-      .map((item: any) => `<li>${item.quantity}x ${item.product.name} - $${(parseFloat(item.product.price) * item.quantity).toFixed(2)}</li>`)
+      .map((item: any) => `
+        <tr style="border-bottom: 1px solid #eee;">
+          <td style="padding: 12px 0;">${item.product.name}</td>
+          <td style="padding: 12px 0; text-align: center;">${item.quantity}</td>
+          <td style="padding: 12px 0; text-align: right;">$${(parseFloat(item.product.price) * item.quantity).toFixed(2)}</td>
+        </tr>
+      `)
       .join('');
 
-    // 1. Send Email to Admin
+    const emailStyle = `
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #334155;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    `;
+
+    // 1. Send Email to Admins (Internal)
+    // User requested notifications to both office@metrolean.com and personal email
     await resend.emails.send({
-      from: 'Metrolean Pharmacy <orders@resend.dev>',
-      to: 'broomuhams@gmail.com',
-      subject: `New Order Received - ${formData.name}`,
+      from: 'Metrolean Pharmacy <office@metrolean.com>',
+      to: ['office@metrolean.com', 'mbahdilan2006@gmail.com'],
+      subject: `[Clinical Order] New Request from ${formData.name}`,
       html: `
-        <h1>New Order Alert</h1>
-        <p><strong>Patient Name:</strong> ${formData.name}</p>
-        <p><strong>Email:</strong> ${formData.email}</p>
-        <p><strong>Phone:</strong> ${formData.phone}</p>
-        <p><strong>Address:</strong> ${formData.address}, ${formData.city}, ${formData.zip}, ${formData.country}</p>
-        <p><strong>Payment Method Selected:</strong> ${selectedPayment}</p>
-        
-        <h2>Order Inventory</h2>
-        <ul>${itemsListHtml}</ul>
-        <p><strong>Total Cost: $${totalPrice.toFixed(2)}</strong></p>
-        
-        <hr />
-        <p><em>Action Required: Please review and send payment instructions to the customer.</em></p>
+        <div style="${emailStyle}">
+          <h1 style="color: #0066cc; font-size: 24px; margin-bottom: 24px;">New Clinical Order Alert</h1>
+          <p><strong>Patient/Client:</strong> ${formData.name}</p>
+          <p><strong>Email:</strong> ${formData.email}</p>
+          <p><strong>Phone:</strong> ${formData.phone}</p>
+          <p><strong>Delivery Address:</strong> ${formData.address}, ${formData.city}, ${formData.zip}, ${formData.country}</p>
+          <p><strong>Payment Method:</strong> ${selectedPayment}</p>
+          
+          <h2 style="font-size: 18px; margin-top: 32px; color: #1e293b;">Order Inventory</h2>
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="text-align: left; border-bottom: 2px solid #e2e8f0; color: #64748b; font-size: 14px;">
+                <th style="padding-bottom: 8px;">Product</th>
+                <th style="padding-bottom: 8px; text-align: center;">Qty</th>
+                <th style="padding-bottom: 8px; text-align: right;">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsListHtml}
+            </tbody>
+          </table>
+          
+          <div style="margin-top: 24px; text-align: right;">
+            <p style="font-size: 18px; font-weight: bold; color: #0066cc;">Calculated Total: $${totalPrice.toFixed(2)}</p>
+          </div>
+          
+          <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 32px 0;" />
+          <p style="font-size: 14px; color: #64748b; background: #f8fafc; padding: 15px; border-radius: 8px;">
+            <strong>Metrolean Protocol:</strong> Please review this request against available stock and send the clinical payment confirmation to the client.
+          </p>
+        </div>
       `,
     });
 
     // 2. Send Confirmation Email to Customer
     await resend.emails.send({
-      from: 'Metrolean Pharmacy <orders@resend.dev>',
+      from: 'Metrolean Pharmacy <office@metrolean.com>',
       to: formData.email,
-      subject: 'Your Order is Being Processed - Metrolean Pharmacy',
+      subject: 'Order Acknowledgment - Metrolean Pharmacy',
       html: `
-        <h1>Order Received</h1>
-        <p>Hello ${formData.name},</p>
-        <p>Thank you for your order with Metrolean Pharmacy. We have received your clinical request and are currently processing it.</p>
-        
-        <h3>Order Summary</h3>
-        <ul>${itemsListHtml}</ul>
-        <p><strong>Total: $${totalPrice.toFixed(2)}</strong></p>
-        <p><strong>Payment Method:</strong> ${selectedPayment}</p>
-        
-        <p>Our clinical team will contact you shortly via WhatsApp or Email with the final payment instructions and delivery details.</p>
-        
-        <p>Best regards,<br />The Metrolean Team</p>
+        <div style="${emailStyle}">
+          <div style="text-align: center; margin-bottom: 32px;">
+             <h1 style="color: #0066cc; font-size: 28px; margin: 0;">Metrolean Pharmacy</h1>
+             <p style="color: #64748b; font-size: 14px; margin-top: 4px;">Premium Healthcare Solutions</p>
+          </div>
+          
+          <p>Hello ${formData.name},</p>
+          <p>This is to acknowledge that we have received your clinical request. Our team is currently reviewing your order for pharmaceutical compliance and availability.</p>
+          
+          <div style="background: #f1f5f9; padding: 24px; border-radius: 16px; margin: 32px 0;">
+            <h3 style="margin-top: 0; font-size: 16px; color: #1e293b;">Order Summary</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+               ${itemsListHtml}
+            </table>
+            <p style="text-align: right; font-weight: bold; font-size: 18px; color: #0066cc; margin-top: 20px;">
+              Total amount: $${totalPrice.toFixed(2)}
+            </p>
+          </div>
+          
+          <p><strong>Next Steps:</strong></p>
+          <p>You will receive a follow-up via <strong>WhatsApp</strong> or <strong>Email</strong> shortly with final payment instructions and delivery timelines.</p>
+          
+          <p style="margin-top: 48px; border-top: 1px solid #e2e8f0; padding-top: 24px;">
+            Best regards,<br />
+            <strong>Clinical Operations Team</strong><br />
+            Metrolean Pharmacy Solutions
+          </p>
+          
+          <div style="text-align: center; margin-top: 32px; font-size: 12px; color: #94a3b8;">
+            <p>© ${new Date().getFullYear()} Metrolean Pharmacy. All pharmaceutical orders are subject to professional verification.</p>
+          </div>
+        </div>
       `,
     });
 

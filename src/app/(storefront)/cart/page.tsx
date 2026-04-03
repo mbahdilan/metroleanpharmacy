@@ -5,7 +5,7 @@ import { useCart } from '@/context/CartContext';
 import { useState } from 'react';
 
 export default function CartPage() {
-  const { items, removeFromCart, updateQuantity, clearCart, totalPrice } = useCart();
+  const { items, removeFromCart, updateQuantity, clearCart, totalPrice, isHydrated } = useCart();
   const [voucher, setVoucher] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
 
@@ -22,115 +22,127 @@ export default function CartPage() {
     }
   };
 
+  if (!isHydrated) {
+    return (
+      <div className="cart-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="loading-spinner"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="cart-page">
-      <h1 className="cart-page-title">Shopping Cart</h1>
+      <h1 className="cart-page-title">Clinical Order</h1>
 
       <div className="cart-page-grid">
-        {/* ── Left Column: Product Table ── */}
+        {/* ── Left Column: Product List ── */}
         <div className="cart-page-left">
           {items.length === 0 ? (
             <div className="cart-page-empty">
-              <span className="cart-page-empty-icon">🛒</span>
-              <h3>Your cart is empty</h3>
-              <p>Browse our pharmacy and add products to your cart.</p>
-              <Link href="/shop" className="btn-primary">Browse Pharmacy</Link>
+              <span className="cart-page-empty-icon">💊</span>
+              <h3>Your prescription is empty</h3>
+              <p>Browse our pharmaceutical supplies and add items to your clinical order.</p>
+              <Link href="/shop" className="btn-primary" style={{ marginTop: '1.5rem' }}>Browse Pharmacy</Link>
             </div>
           ) : (
             <>
-              {/* Table Header */}
+              {/* Table Header (Desktop Only) */}
               <div className="cart-table-header">
-                <span className="cart-col-product">Product Code</span>
-                <span className="cart-col-qty">Quantity</span>
-                <span className="cart-col-total">Total</span>
-                <span className="cart-col-action">Action</span>
+                <span>Product Details</span>
+                <span style={{ textAlign: 'center' }}>Quantity</span>
+                <span style={{ textAlign: 'right' }}>Line Total</span>
+                <span style={{ textAlign: 'center' }}></span>
               </div>
 
-              {/* Table Rows */}
-              {items.map(item => {
-                const price = parseFloat(item.product.price);
-                const lineTotal = price * item.quantity;
-                return (
-                  <div key={item.product.id} className="cart-table-row">
-                    {/* Product Info */}
-                    <div className="cart-col-product">
-                      <div className="cart-product-thumb">
-                        {item.product.image_url ? (
-                          <img src={item.product.image_url} alt={item.product.name} />
-                        ) : (
-                          <span className="cart-product-thumb-placeholder">💊</span>
-                        )}
+              {/* Items List */}
+              <div className="cart-items-list" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {items.map(item => {
+                  const price = parseFloat(item.product.price);
+                  const lineTotal = price * item.quantity;
+                  return (
+                    <div key={item.product.id} className="cart-table-row">
+                      {/* Product Detail Card */}
+                      <div className="cart-col-product">
+                        <div className="cart-product-thumb">
+                          {item.product.image_url ? (
+                            <img src={item.product.image_url} alt={item.product.name} />
+                          ) : (
+                            <span style={{ fontSize: '2rem' }}>📦</span>
+                          )}
+                        </div>
+                        <div className="cart-product-details">
+                          <p className="cart-product-name">{item.product.name}</p>
+                          <p className="cart-product-variant">
+                             {item.product.dosage_form || 'Standard'} · {item.product.volume_ml ? `${item.product.volume_ml}ml` : 'Unit'}
+                          </p>
+                        </div>
                       </div>
-                      <div className="cart-product-details">
-                        <p className="cart-product-name">{item.product.name}</p>
-                        <p className="cart-product-variant">
-                          {item.product.dosage_form} · {item.product.volume_ml}ml
-                        </p>
-                      </div>
-                    </div>
 
-                    {/* Quantity Controls */}
-                    <div className="cart-col-qty">
-                      <div className="cart-qty-controls">
+                      {/* Quantity Container */}
+                      <div className="cart-col-qty" style={{ display: 'flex', justifyContent: 'center' }}>
+                        <div className="cart-qty-controls">
+                          <button
+                            className="cart-qty-btn"
+                            onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                            aria-label="Decrease quantity"
+                          >
+                            −
+                          </button>
+                          <span className="cart-qty-value">{item.quantity}</span>
+                          <button
+                            className="cart-qty-btn"
+                            onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                            aria-label="Increase quantity"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Price Container */}
+                      <div className="cart-col-total" style={{ textAlign: 'right' }}>
+                        <span className="cart-line-total">${lineTotal.toFixed(2)}</span>
+                      </div>
+
+                      {/* Action Container */}
+                      <div className="cart-col-action" style={{ display: 'flex', justifyContent: 'center' }}>
                         <button
-                          className="cart-qty-btn"
-                          onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                          className="cart-delete-btn"
+                          onClick={() => removeFromCart(item.product.id)}
+                          title="Remove item"
                         >
-                          −
-                        </button>
-                        <span className="cart-qty-value">{item.quantity}</span>
-                        <button
-                          className="cart-qty-btn"
-                          onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                        >
-                          +
+                          ✕
                         </button>
                       </div>
                     </div>
-
-                    {/* Line Total */}
-                    <div className="cart-col-total">
-                      <span className="cart-line-total">${lineTotal.toFixed(2)}</span>
-                    </div>
-
-                    {/* Delete Action */}
-                    <div className="cart-col-action">
-                      <button
-                        className="cart-delete-btn"
-                        onClick={() => removeFromCart(item.product.id)}
-                        title="Remove item"
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
 
               {/* Bottom Actions */}
               <div className="cart-table-actions">
-                <button className="cart-update-btn" onClick={() => {}}>
-                  Update Cart
-                </button>
+                <Link href="/shop" className="cart-update-btn">
+                  ← Continue Shopping
+                </Link>
                 <button className="cart-clear-btn" onClick={clearCart}>
-                  Clear Cart
+                  Clear clinical order
                 </button>
               </div>
             </>
           )}
         </div>
 
-        {/* ── Right Column: Order Summary ── */}
+        {/* ── Right Column: Order Summary (Sticky) ── */}
         <div className="cart-page-right">
           <div className="order-summary-card">
-            <h3 className="order-summary-title">Order Summary</h3>
+            <h3 className="order-summary-title">Summary</h3>
 
-            {/* Voucher Input */}
+            {/* Voucher Section */}
             <div className="voucher-row">
               <input
                 type="text"
                 className="voucher-input"
-                placeholder="Discount voucher"
+                placeholder="Institutional Code"
                 value={voucher}
                 onChange={(e) => setVoucher(e.target.value)}
               />
@@ -139,39 +151,39 @@ export default function CartPage() {
               </button>
             </div>
 
-            {/* Summary Lines */}
+            {/* Price Calculations */}
             <div className="order-summary-lines">
               <div className="summary-line">
-                <span>Sub Total</span>
+                <span>Sub-total</span>
                 <span>${totalPrice.toFixed(2)}</span>
               </div>
               {appliedDiscount > 0 && (
                 <div className="summary-line summary-line-discount">
-                  <span>Discount ({appliedDiscount}%)</span>
+                  <span>Institutional Discount ({appliedDiscount}%)</span>
                   <span>-${discountAmount.toFixed(2)}</span>
                 </div>
               )}
               <div className="summary-line">
-                <span>Delivery fee</span>
+                <span>Handling & Delivery</span>
                 <span>{deliveryFee === 0 ? 'FREE' : `$${deliveryFee.toFixed(2)}`}</span>
               </div>
             </div>
 
-            {/* Total */}
+            {/* Grand Total */}
             <div className="order-summary-total">
-              <span>Total</span>
+              <span>Payable Total</span>
               <span className="order-summary-total-price">${grandTotal.toFixed(2)}</span>
             </div>
 
-            {/* Warranty Note */}
+            {/* Compliance Note */}
             <div className="order-summary-note">
-              <span className="order-summary-note-icon">🛡️</span>
-              <p>All pharmaceutical products comply with <strong>regulatory standards</strong>. <a href="/terms">Details</a></p>
+              <span className="order-summary-note-icon">📋</span>
+              <p>By proceeding, you verify that this order complies with <strong>metrolean clinical standards</strong>. <a href="/terms" style={{ textDecoration: 'underline' }}>Legal compliance</a></p>
             </div>
 
-            {/* Checkout Button */}
+            {/* Primary Action */}
             <Link href="/checkout" className="cart-checkout-btn">
-              Checkout Now
+              Proceed to Secure Checkout
             </Link>
           </div>
         </div>

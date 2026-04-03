@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { Product, CartItem } from '@/lib/supabase';
 
 type CartContextType = {
@@ -13,6 +13,7 @@ type CartContextType = {
   totalPrice: number;
   isCartOpen: boolean;
   setCartOpen: (open: boolean) => void;
+  isHydrated: boolean;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -20,6 +21,27 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setCartOpen] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const savedCart = localStorage.getItem('metrolean_cart');
+    if (savedCart) {
+      try {
+        setItems(JSON.parse(savedCart));
+      } catch (e) {
+        console.error('Failed to parse cart from localStorage', e);
+      }
+    }
+    setIsHydrated(true);
+  }, []);
+
+  // Save to localStorage on change
+  useEffect(() => {
+    if (isHydrated) {
+      localStorage.setItem('metrolean_cart', JSON.stringify(items));
+    }
+  }, [items, isHydrated]);
 
   const addToCart = useCallback((product: Product, quantity: number = 1) => {
     setItems(prev => {
@@ -62,7 +84,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   return (
     <CartContext.Provider value={{
       items, addToCart, removeFromCart, updateQuantity, clearCart,
-      totalItems, totalPrice, isCartOpen, setCartOpen
+      totalItems, totalPrice, isCartOpen, setCartOpen, isHydrated
     }}>
       {children}
     </CartContext.Provider>
