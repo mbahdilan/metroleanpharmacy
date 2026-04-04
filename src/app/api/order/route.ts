@@ -1,8 +1,16 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 import { NextResponse } from 'next/server';
 
-// Initialize Resend with the API key from environment variables
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Configure Nodemailer for Hostinger SMTP
+const transporter = nodemailer.createTransport({
+  host: 'smtp.hostinger.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL_USER || 'office@metrolean.com',
+    pass: process.env.EMAIL_PASSWORD, // Make sure to add this inside Vercel environment variables!
+  },
+});
 
 export async function POST(req: Request) {
   try {
@@ -29,9 +37,9 @@ export async function POST(req: Request) {
 
     // 1. Send Email to Admins (Internal)
     // User requested notifications to both office@metrolean.com and personal email
-    await resend.emails.send({
-      from: 'Metrolean Pharmacy <office@metrolean.com>',
-      to: ['office@metrolean.com', 'mbahdilan2006@gmail.com'],
+    await transporter.sendMail({
+      from: '"Metrolean Pharmacy" <office@metrolean.com>',
+      to: 'office@metrolean.com, mbahdilan2006@gmail.com',
       subject: `[Clinical Order] New Request from ${formData.name}`,
       html: `
         <div style="${emailStyle}">
@@ -69,8 +77,8 @@ export async function POST(req: Request) {
     });
 
     // 2. Send Confirmation Email to Customer
-    await resend.emails.send({
-      from: 'Metrolean Pharmacy <office@metrolean.com>',
+    await transporter.sendMail({
+      from: '"Metrolean Pharmacy" <office@metrolean.com>',
       to: formData.email,
       subject: 'Order Acknowledgment - Metrolean Pharmacy',
       html: `
