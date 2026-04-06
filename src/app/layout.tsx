@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
+import TawkTo from '@/components/TawkTo';
 import './globals.css';
 // Global imports
 
@@ -20,19 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Script id="buttonizer-script" strategy="afterInteractive">
           {`(function(n,t,c,d){if (t.getElementById(d)){return;};var o=t.createElement("script");o.id=d;o.async=!0,o.src="https://cdn.buttonizer.io/embed.js",o.onload=function(){window.Buttonizer.init(c)},t.head.appendChild(o)})(window,document,"85565231-6ee6-43ef-9525-f3849619bbab", "buttonizer_script");`}
         </Script>
-        <Script id="smartsupp-script" strategy="afterInteractive">
-          {`
-            var _smartsupp = _smartsupp || {};
-            _smartsupp.key = '593a113e71ef15928c1a48b851aaa6593995cc33';
-            window.smartsupp||(function(d) {
-              var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
-              s=d.getElementsByTagName('script')[0];c=d.createElement('script');
-              c.type='text/javascript';c.charset='utf-8';c.async=true;
-              c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
-            })(document);
-          `}
-        </Script>
-        <noscript>Powered by <a href="https://www.smartsupp.com" target="_blank">Smartsupp</a></noscript>
+        <TawkTo />
       </body>
     </html>
   );
