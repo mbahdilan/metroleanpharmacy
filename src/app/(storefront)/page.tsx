@@ -57,10 +57,10 @@ export default async function HomePage() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem' }}>
             {[
-              { title: 'Relaxatives', desc: 'Psychedelics & Mood Enhancers for clinical relief.', link: '/shop?category=relaxatives', img: '/images/illustrations/pharma.png', color: '#f5f3ff' },
-              { title: 'Strains', desc: 'Medical-grade cannabis & hemp clinical products.', link: '/shop?category=strains', img: '/images/illustrations/strains.png', color: '#ecfdf5' },
-              { title: 'Syrups', desc: 'Tinctures, drops & liquid pharmaceutical medications.', link: '/shop?category=syrups', img: '/images/illustrations/lab.png', color: '#e0f2fe' },
-              { title: 'Others', desc: 'Vitamins, supplements & everyday healthcare essentials.', link: '/shop?category=others', img: '/images/illustrations/equipment.png', color: '#ffedd5' },
+              { title: 'Relaxatives', desc: 'Psychedelics & Mood Enhancers for clinical relief.', link: '/shop?category=relaxatives', img: '/images/categories/relaxatives.jpg', color: '#f5f3ff' },
+              { title: 'Strains', desc: 'Medical-grade cannabis & hemp clinical products.', link: '/shop?category=strains', img: '/images/categories/strains.jpg', color: '#ecfdf5' },
+              { title: 'Syrups', desc: 'Tinctures, drops & liquid pharmaceutical medications.', link: '/shop?category=syrups', img: '/images/categories/syrups.jpg', color: '#e0f2fe' },
+              { title: 'Others', desc: 'Vitamins, supplements & everyday healthcare essentials.', link: '/shop?category=others', img: '/images/categories/others.jpg', color: '#ffedd5' },
             ].map(c => (
               <Link href={c.link} key={c.title} className="category-card">
                 <div className="category-card-icon-box" style={{ backgroundColor: c.color }}>
