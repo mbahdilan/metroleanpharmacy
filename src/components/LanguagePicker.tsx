@@ -68,16 +68,25 @@ export default function LanguagePicker() {
     setActiveLang(code);
     setIsOpen(false);
 
-    // Always clear both cookie variants first so stale values don't persist
-    document.cookie = 'googtrans=; path=/; max-age=0';
-    document.cookie = `googtrans=; path=/; domain=.${window.location.hostname}; max-age=0`;
-    document.cookie = `googtrans=; path=/; domain=${window.location.hostname}; max-age=0`;
-
-    if (code !== 'en') {
-      document.cookie = `googtrans=/en/${code}; path=/`;
-      document.cookie = `googtrans=/en/${code}; path=/; domain=.${window.location.hostname}`;
+    if (code === 'en') {
+      // Strip all cookie variants then reload to restore original English
+      document.cookie = 'googtrans=; path=/; max-age=0';
+      document.cookie = `googtrans=; path=/; domain=.${window.location.hostname}; max-age=0`;
+      document.cookie = `googtrans=; path=/; domain=${window.location.hostname}; max-age=0`;
+      window.location.reload();
+      return;
     }
 
+    // Let GTranslate handle its own state + cookie — avoids reload conflicts
+    if (typeof (window as any).doGTranslate === 'function') {
+      (window as any).doGTranslate(`en|${code}`);
+      return;
+    }
+
+    // Fallback if script hasn't loaded yet
+    document.cookie = 'googtrans=; path=/; max-age=0';
+    document.cookie = `googtrans=; path=/; domain=.${window.location.hostname}; max-age=0`;
+    document.cookie = `googtrans=/en/${code}; path=/`;
     window.location.reload();
   }, []);
 
