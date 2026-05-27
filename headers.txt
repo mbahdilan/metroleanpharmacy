@@ -1,0 +1,11 @@
+HTTP/1.1 200 OK
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+link: </images/logo-mck.png.jpeg>; rel=preload; as="image", </_next/static/chunks/src_app_globals_91e4631d.css>; rel=preload; as="style"
+Cache-Control: no-store, must-revalidate
+X-Powered-By: Next.js
+Content-Type: text/html; charset=utf-8
+Date: Tue, 24 Mar 2026 01:12:44 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+

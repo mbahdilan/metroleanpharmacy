@@ -1,0 +1,103 @@
+'use client';
+
+import Link from 'next/link';
+import { useCart } from '@/context/CartContext';
+import { useExchangeRates } from '@/hooks/useExchangeRates';
+
+export default function CartSidebar() {
+  const { items, removeFromCart, updateQuantity, totalPrice, isCartOpen, setCartOpen } = useCart();
+  const { formatPrice } = useExchangeRates();
+
+  if (!isCartOpen) return null;
+
+  return (
+    <>
+      <div className="cart-overlay" onClick={() => setCartOpen(false)} />
+      <aside className="cart-sidebar shadow-premium">
+        <div className="cart-header">
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <h2 style={{ margin: 0 }}>Your Stash</h2>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+              {items.length} {items.length === 1 ? 'item' : 'items'} in list
+            </span>
+          </div>
+          <button className="close-btn" onClick={() => setCartOpen(false)} aria-label="Close cart">✕</button>
+        </div>
+
+        <div className="cart-items">
+          {items.length === 0 ? (
+            <div className="empty-cart">
+              <span style={{ fontSize: '3rem', marginBottom: '1rem' }}>🛒</span>
+              <p style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>Your order list is empty</p>
+              <button 
+                className="btn-secondary" 
+                onClick={() => setCartOpen(false)}
+                style={{ marginTop: '1rem', width: '100%', borderRadius: '12px' }}
+              >
+                Browse Market
+              </button>
+            </div>
+          ) : (
+            items.map(item => (
+              <div key={item.product.id} className="cart-item">
+                <div className="cart-item-info">
+                  <p className="cart-item-name">{item.product.name}</p>
+                  <div className="cart-item-price-container">
+                    <p className="cart-item-price">
+                      <span style={{ color: 'var(--accent)', fontWeight: 800 }}>{formatPrice(item.product.price).usd}</span>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginLeft: '8px' }}>
+                        {item.product.volume_ml ? `${item.product.volume_ml}ml` : 'Unit'}
+                      </span>
+                    </p>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '8px' }}>
+                      {formatPrice(item.product.price).eur} | {formatPrice(item.product.price).gbp}
+                    </div>
+                  </div>
+                  <div className="quantity-controls-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                    <div className="quantity-controls">
+                      <button className="qty-btn" onClick={() => updateQuantity(item.product.id, item.quantity - 1)}>−</button>
+                      <span className="qty-display">{item.quantity}</span>
+                      <button className="qty-btn" onClick={() => updateQuantity(item.product.id, item.quantity + 1)}>+</button>
+                    </div>
+                    {item.product.min_quantity > 1 && (
+                      <span style={{ fontSize: '0.65rem', color: 'var(--accent)', fontWeight: 700 }}>
+                        Min. order: {item.product.min_quantity}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <button 
+                  className="remove-btn" 
+                  onClick={() => removeFromCart(item.product.id)}
+                  style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.7 }}
+                >
+                  REMOVE
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+
+        {items.length > 0 && (
+          <div className="cart-footer">
+            <div className="cart-total">
+              <span style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>Subtotal</span>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                <span className="cart-total-price">{formatPrice(totalPrice).usd}</span>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                  {formatPrice(totalPrice).eur} | {formatPrice(totalPrice).gbp}
+                </span>
+              </div>
+            </div>
+            <Link href="/cart" onClick={() => setCartOpen(false)} className="view-cart-btn-secondary" style={{ display: 'block', textAlign: 'center', marginBottom: '1rem', fontWeight: 700, color: 'var(--accent)', textDecoration: 'underline', fontSize: '0.9rem' }}>
+              View Full Stash
+            </Link>
+            <Link href="/checkout" onClick={() => setCartOpen(false)} className="checkout-btn" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              Proceed to Secure Checkout
+            </Link>
+          </div>
+        )}
+      </aside>
+    </>
+  );
+}
