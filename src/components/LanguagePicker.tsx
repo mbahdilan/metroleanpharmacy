@@ -68,26 +68,21 @@ export default function LanguagePicker() {
     setActiveLang(code);
     setIsOpen(false);
 
-    if (code === 'en') {
-      // Strip all cookie variants then reload to restore original English
-      document.cookie = 'googtrans=; path=/; max-age=0';
-      document.cookie = `googtrans=; path=/; domain=.${window.location.hostname}; max-age=0`;
-      document.cookie = `googtrans=; path=/; domain=${window.location.hostname}; max-age=0`;
-      window.location.reload();
-      return;
-    }
-
-    // Let GTranslate handle its own state + cookie — avoids reload conflicts
-    if (typeof (window as any).doGTranslate === 'function') {
-      (window as any).doGTranslate(`en|${code}`);
-      return;
-    }
-
-    // Fallback if script hasn't loaded yet
+    // Wipe every storage slot GTranslate could be reading from
+    const host = window.location.hostname;
     document.cookie = 'googtrans=; path=/; max-age=0';
-    document.cookie = `googtrans=; path=/; domain=.${window.location.hostname}; max-age=0`;
-    document.cookie = `googtrans=/en/${code}; path=/`;
-    window.location.reload();
+    document.cookie = `googtrans=; path=/; domain=.${host}; max-age=0`;
+    document.cookie = `googtrans=; path=/; domain=${host}; max-age=0`;
+    try { localStorage.removeItem('googtrans'); } catch (_) {}
+
+    if (code !== 'en') {
+      document.cookie = `googtrans=/en/${code}; path=/`;
+    }
+
+    // replace() avoids BFCache on mobile (which restores old translated page)
+    window.location.replace(
+      window.location.pathname + window.location.search + window.location.hash
+    );
   }, []);
 
   const current = LANGUAGES.find(l => l.code === activeLang) ?? LANGUAGES[0];
