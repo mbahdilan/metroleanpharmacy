@@ -68,10 +68,12 @@ export default function LanguagePicker() {
     setActiveLang(code);
     setIsOpen(false);
 
-    if (code === 'en') {
-      document.cookie = 'googtrans=; path=/; max-age=0';
-      document.cookie = `googtrans=; path=/; domain=.${window.location.hostname}; max-age=0`;
-    } else {
+    // Always clear both cookie variants first so stale values don't persist
+    document.cookie = 'googtrans=; path=/; max-age=0';
+    document.cookie = `googtrans=; path=/; domain=.${window.location.hostname}; max-age=0`;
+    document.cookie = `googtrans=; path=/; domain=${window.location.hostname}; max-age=0`;
+
+    if (code !== 'en') {
       document.cookie = `googtrans=/en/${code}; path=/`;
       document.cookie = `googtrans=/en/${code}; path=/; domain=.${window.location.hostname}`;
     }
