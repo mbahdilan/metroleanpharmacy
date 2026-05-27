@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main>{children}</main>
         <AnnouncementPopup />
         <Script id="gtranslate-settings" strategy="afterInteractive">
-          {`window.gtranslateSettings = {"default_language":"en","native_language_names":true,"detect_browser_language":false,"languages":["en","fr","it","es","ru","de","sq"],"wrapper_selector":".gtranslate_wrapper","flag_size":16,"switcher_open_direction":"top","flag_style":"3d","alt_flags":{"en":"usa"}}`}
+          {`window.gtranslateSettings = {"default_language":"en","native_language_names":true,"detect_browser_language":false,"languages":["en","fr","it","es","ru","de","sq"],"wrapper_selector":".gtranslate_wrapper","flag_size":16,"switcher_open_direction":"top","flag_style":"rectangle","alt_flags":{"en":"usa"}}`}
         </Script>
         <Script src="https://cdn.gtranslate.net/widgets/latest/dwf.js" strategy="afterInteractive" defer />
         <Script id="buttonizer-script" strategy="afterInteractive">
