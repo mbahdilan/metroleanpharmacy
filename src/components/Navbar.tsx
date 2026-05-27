@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import { useCart } from '@/context/CartContext';
+import LanguagePicker from '@/components/LanguagePicker';
 
 export default function Navbar() {
   const { totalItems, setCartOpen } = useCart() as any;
@@ -56,7 +57,7 @@ export default function Navbar() {
           </div>
 
           <div className="navbar-actions">
-            <div className="gtranslate_wrapper"></div>
+            <LanguagePicker />
             <button className="cart-btn" onClick={() => (setCartOpen as any)(true)} id="open-cart-btn">
               <svg className="cart-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="9" cy="21" r="1" />
