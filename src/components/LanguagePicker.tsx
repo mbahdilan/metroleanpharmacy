@@ -49,6 +49,23 @@ function getActiveLang(): string {
   return cookie.split('/')[2] || 'en';
 }
 
+// Drives the hidden select Google's own translate script injects into
+// .gtranslate_wrapper — same mechanism GTranslate's doGTranslate() uses.
+// Letting Google's script own the googtrans cookie write avoids the
+// domain-scoping mismatch that made a raw document.cookie write get
+// shadowed by Google's own cookie on the *second* language switch.
+function applyGoogleTranslation(code: string, attempt = 0): void {
+  const combo = document.querySelector<HTMLSelectElement>('select.goog-te-combo');
+  if (!combo) {
+    if (attempt < 10) setTimeout(() => applyGoogleTranslation(code, attempt + 1), 300);
+    return;
+  }
+  combo.value = code; // 'en' (same as source) is Google's documented "show original" trick
+  const evt = new Event('change', { bubbles: true });
+  combo.dispatchEvent(evt);
+  combo.dispatchEvent(evt); // Google's own widget fires twice; a single fire is unreliable
+}
+
 export default function LanguagePicker() {
   const [isOpen, setIsOpen]           = useState(false);
   const [suggested, setSuggested]     = useState<string | null>(null);
@@ -82,22 +99,7 @@ export default function LanguagePicker() {
     setActiveLang(code);
     setIsOpen(false);
     setStep('language');
-
-    // Wipe every storage slot GTranslate could be reading from
-    const host = window.location.hostname;
-    document.cookie = 'googtrans=; path=/; max-age=0';
-    document.cookie = `googtrans=; path=/; domain=.${host}; max-age=0`;
-    document.cookie = `googtrans=; path=/; domain=${host}; max-age=0`;
-    try { localStorage.removeItem('googtrans'); } catch (_) {}
-
-    if (code !== 'en') {
-      document.cookie = `googtrans=/en/${code}; path=/`;
-    }
-
-    // replace() avoids BFCache on mobile (which restores old translated page)
-    window.location.replace(
-      window.location.pathname + window.location.search + window.location.hash
-    );
+    applyGoogleTranslation(code);
   }, []);
 
   const selectLanguage = useCallback((code: string) => {
