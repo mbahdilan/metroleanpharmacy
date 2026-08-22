@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { supabase, Product, Category } from '@/lib/supabase';
 import { useCart } from '@/context/CartContext';
 import { STRAIN_ICONS } from '@/components/ProductCard';
-import { useExchangeRates } from '@/hooks/useExchangeRates';
+import { useCurrency } from '@/context/CurrencyContext';
 import './pdp.css';
 
 type TabType = 'description' | 'details' | 'comments';
@@ -23,7 +23,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   const [activeTab, setActiveTab] = useState<TabType>('description');
   const [isDescExpanded, setIsDescExpanded] = useState(false);
   const { addToCart, setCartOpen } = useCart();
-  const { formatPrice } = useExchangeRates();
+  const { format } = useCurrency();
   const router = useRouter();
   
   const imgRef = useRef<HTMLDivElement>(null);
@@ -284,13 +284,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
           {/* Price & Rating */}
           <div className="pdp-price-rating-row">
             <div className="pdp-price">
-              {formatPrice(product.price).usd}
+              {format(product.price)}
               {product.compare_at_price && parseFloat(product.compare_at_price) > parseFloat(product.price) && (
-                <span className="pdp-compare-price">{formatPrice(product.compare_at_price).usd}</span>
+                <span className="pdp-compare-price">{format(product.compare_at_price)}</span>
               )}
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600, marginTop: '4px' }}>
-                {formatPrice(product.price).eur} | {formatPrice(product.price).gbp}
-              </div>
             </div>
             <div className="pdp-stars-row">
               {[1, 2, 3, 4].map(n => (
@@ -413,12 +410,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             {/* Total Price */}
             <div className="pdp-control-group">
               <span className="pdp-control-label">Total Price</span>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span className="pdp-total-price">{formatPrice(totalPrice).usd}</span>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
-                  {formatPrice(totalPrice).eur} | {formatPrice(totalPrice).gbp}
-                </span>
-              </div>
+              <span className="pdp-total-price">{format(totalPrice)}</span>
             </div>
           </div>
 
@@ -465,12 +457,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                   </div>
                   <div className="pdp-related-info">
                     <span className="pdp-related-name">{p.name}</span>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span className="pdp-related-price">{formatPrice(p.price).usd}</span>
-                      <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
-                        {formatPrice(p.price).eur} | {formatPrice(p.price).gbp}
-                      </span>
-                    </div>
+                    <span className="pdp-related-price">{format(p.price)}</span>
                   </div>
                 </Link>
               ))}

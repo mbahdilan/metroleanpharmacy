@@ -3,13 +3,13 @@
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { useState } from 'react';
-import { useExchangeRates } from '@/hooks/useExchangeRates';
+import { useCurrency } from '@/context/CurrencyContext';
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, clearCart, totalPrice, isHydrated } = useCart();
   const [voucher, setVoucher] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
-  const { formatPrice } = useExchangeRates();
+  const { format } = useCurrency();
 
   const deliveryFee = totalPrice > 50 ? 0 : 5.00;
   const discountAmount = totalPrice * (appliedDiscount / 100);
@@ -108,10 +108,7 @@ export default function CartPage() {
 
                       {/* Price Container */}
                       <div className="cart-col-total" style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }}>
-                        <span className="cart-line-total" style={{ fontWeight: 800 }}>{formatPrice(lineTotal).usd}</span>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
-                          {formatPrice(lineTotal).eur} | {formatPrice(lineTotal).gbp}
-                        </span>
+                        <span className="cart-line-total" style={{ fontWeight: 800 }}>{format(lineTotal)}</span>
                       </div>
 
                       {/* Action Container */}
@@ -165,29 +162,24 @@ export default function CartPage() {
             <div className="order-summary-lines">
               <div className="summary-line">
                 <span>Sub-total</span>
-                <span>{formatPrice(totalPrice).usd}</span>
+                <span>{format(totalPrice)}</span>
               </div>
               {appliedDiscount > 0 && (
                 <div className="summary-line summary-line-discount">
                   <span>Discount ({appliedDiscount}%)</span>
-                  <span>-{formatPrice(discountAmount).usd}</span>
+                  <span>-{format(discountAmount)}</span>
                 </div>
               )}
               <div className="summary-line">
                 <span>Shipping</span>
-                <span>{deliveryFee === 0 ? 'FREE' : formatPrice(deliveryFee).usd}</span>
+                <span>{deliveryFee === 0 ? 'FREE' : format(deliveryFee)}</span>
               </div>
             </div>
 
             {/* Grand Total */}
-            <div className="order-summary-total" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                <span>Payable Total</span>
-                <span className="order-summary-total-price">{formatPrice(grandTotal).usd}</span>
-              </div>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
-                {formatPrice(grandTotal).eur} | {formatPrice(grandTotal).gbp}
-              </span>
+            <div className="order-summary-total" style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+              <span>Payable Total</span>
+              <span className="order-summary-total-price">{format(grandTotal)}</span>
             </div>
 
             {/* Compliance Note */}

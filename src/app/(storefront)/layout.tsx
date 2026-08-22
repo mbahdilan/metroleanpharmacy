@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import Script from 'next/script';
 import { CartProvider } from '@/context/CartContext';
+import { CurrencyProvider } from '@/context/CurrencyContext';
 import Navbar from '@/components/Navbar';
 import CartSidebar from '@/components/CartSidebar';
 
 export default function StorefrontLayout({ children }: { children: React.ReactNode }) {
   return (
+    <CurrencyProvider>
     <CartProvider>
       <Navbar />
       <CartSidebar />
@@ -48,5 +50,6 @@ export default function StorefrontLayout({ children }: { children: React.ReactNo
         </div>
       </footer>
     </CartProvider>
+    </CurrencyProvider>
   );
 }

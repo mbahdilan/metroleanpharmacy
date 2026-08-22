@@ -14,7 +14,10 @@ const transporter = nodemailer.createTransport({
 
 export async function POST(req: Request) {
   try {
-    const { formData, items, totalPrice } = await req.json();
+    const { formData, items, totalPrice, currency, convertedTotal } = await req.json();
+    const customerTotalDisplay = currency && currency !== 'USD' && convertedTotal
+      ? `${convertedTotal} (${currency})`
+      : `$${totalPrice.toFixed(2)}`;
 
     const itemsListHtml = items
       .map((item: any) => `
@@ -95,7 +98,7 @@ export async function POST(req: Request) {
                ${itemsListHtml}
             </table>
             <p style="text-align: right; font-weight: bold; font-size: 18px; color: #0066cc; margin-top: 20px;">
-              Total amount: $${totalPrice.toFixed(2)}
+              Total amount: ${customerTotalDisplay}
             </p>
           </div>
 

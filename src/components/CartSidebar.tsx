@@ -2,11 +2,11 @@
 
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
-import { useExchangeRates } from '@/hooks/useExchangeRates';
+import { useCurrency } from '@/context/CurrencyContext';
 
 export default function CartSidebar() {
   const { items, removeFromCart, updateQuantity, totalPrice, isCartOpen, setCartOpen } = useCart();
-  const { formatPrice } = useExchangeRates();
+  const { format } = useCurrency();
 
   if (!isCartOpen) return null;
 
@@ -44,14 +44,11 @@ export default function CartSidebar() {
                   <p className="cart-item-name">{item.product.name}</p>
                   <div className="cart-item-price-container">
                     <p className="cart-item-price">
-                      <span style={{ color: 'var(--accent)', fontWeight: 800 }}>{formatPrice(item.product.price).usd}</span>
+                      <span style={{ color: 'var(--accent)', fontWeight: 800 }}>{format(item.product.price)}</span>
                       <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginLeft: '8px' }}>
                         {item.product.volume_ml ? `${item.product.volume_ml}ml` : 'Unit'}
                       </span>
                     </p>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '8px' }}>
-                      {formatPrice(item.product.price).eur} | {formatPrice(item.product.price).gbp}
-                    </div>
                   </div>
                   <div className="quantity-controls-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
                     <div className="quantity-controls">
@@ -82,12 +79,7 @@ export default function CartSidebar() {
           <div className="cart-footer">
             <div className="cart-total">
               <span style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>Subtotal</span>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                <span className="cart-total-price">{formatPrice(totalPrice).usd}</span>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                  {formatPrice(totalPrice).eur} | {formatPrice(totalPrice).gbp}
-                </span>
-              </div>
+              <span className="cart-total-price">{format(totalPrice)}</span>
             </div>
             <Link href="/cart" onClick={() => setCartOpen(false)} className="view-cart-btn-secondary" style={{ display: 'block', textAlign: 'center', marginBottom: '1rem', fontWeight: 700, color: 'var(--accent)', textDecoration: 'underline', fontSize: '0.9rem' }}>
               View Full Cart

@@ -3,12 +3,12 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
-import { useExchangeRates } from '@/hooks/useExchangeRates';
+import { useCurrency } from '@/context/CurrencyContext';
 import { BUSINESS_PHONE_DISPLAY, BUSINESS_PHONE_TEL } from '@/lib/contact';
 
 export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
-  const { formatPrice } = useExchangeRates();
+  const { currency, format } = useCurrency();
   const [isOrdered, setIsOrdered] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -31,7 +31,7 @@ export default function CheckoutPage() {
     fetch('/api/order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ formData, items, totalPrice }),
+      body: JSON.stringify({ formData, items, totalPrice, currency, convertedTotal: format(totalPrice) }),
     }).catch(err => console.error('Email notification failed:', err));
 
     setIsOrdered(true);
@@ -171,32 +171,22 @@ export default function CheckoutPage() {
                 <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>
                   {item.quantity}× {item.product.name}
                 </span>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                  <span style={{ fontWeight: 700 }}>{formatPrice(parseFloat(item.product.price) * item.quantity).usd}</span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                    {formatPrice(parseFloat(item.product.price) * item.quantity).eur} | {formatPrice(parseFloat(item.product.price) * item.quantity).gbp}
-                  </span>
-                </div>
+                <span style={{ fontWeight: 700 }}>{format(parseFloat(item.product.price) * item.quantity)}</span>
               </div>
             ))}
           </div>
 
           <div className="summary-item">
             <span>Subtotal</span>
-            <span>{formatPrice(totalPrice).usd}</span>
+            <span>{format(totalPrice)}</span>
           </div>
           <div className="summary-item">
             <span>Shipping</span>
             <span style={{ color: 'var(--accent)', fontWeight: 700 }}>Free</span>
           </div>
-          <div className="summary-total" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end', paddingTop: '1.5rem', marginTop: '0.5rem', borderTop: '2px dashed var(--border)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-              <span>Total</span>
-              <span>{formatPrice(totalPrice).usd}</span>
-            </div>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
-              {formatPrice(totalPrice).eur} | {formatPrice(totalPrice).gbp}
-            </span>
+          <div className="summary-total" style={{ display: 'flex', justifyContent: 'space-between', width: '100%', paddingTop: '1.5rem', marginTop: '0.5rem', borderTop: '2px dashed var(--border)' }}>
+            <span>Total</span>
+            <span>{format(totalPrice)}</span>
           </div>
 
           <button

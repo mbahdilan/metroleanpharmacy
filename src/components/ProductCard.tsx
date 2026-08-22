@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Product } from '@/lib/supabase';
 import { useCart } from '@/context/CartContext';
-import { useExchangeRates } from '@/hooks/useExchangeRates';
+import { useCurrency } from '@/context/CurrencyContext';
 
 const STRAIN_ICONS: Record<string, string> = {
   Respiratory: '🫁',
@@ -17,7 +17,7 @@ const STRAIN_ICONS: Record<string, string> = {
 
 export default function ProductCard({ product }: { product: Product }) {
   const { addToCart, setCartOpen } = useCart();
-  const { formatPrice } = useExchangeRates();
+  const { format } = useCurrency();
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -129,13 +129,6 @@ export default function ProductCard({ product }: { product: Product }) {
           color: var(--accent);
           margin: 0.2rem 0 0.1rem 0;
         }
-        .card-price-converted {
-          font-size: 0.7rem;
-          color: var(--text-secondary);
-          font-weight: 600;
-          margin-bottom: 0.6rem;
-        }
-
         /* Actions */
         .card-actions {
           display: grid;
@@ -210,15 +203,12 @@ export default function ProductCard({ product }: { product: Product }) {
             <span>{mockRating} ({mockReviews / 1000 >= 1 ? `${(mockReviews/1000).toFixed(1)}k` : mockReviews} Reviews)</span>
           </div>
           <div className="card-price" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span>{formatPrice(product.price).usd}</span>
+            <span>{format(product.price)}</span>
             {product.min_quantity > 1 && (
               <span style={{ fontSize: '0.65rem', background: 'var(--accent-light)', color: 'var(--accent)', padding: '2px 6px', borderRadius: '4px', fontWeight: 800 }}>
                 Min. {product.min_quantity}
               </span>
             )}
-          </div>
-          <div className="card-price-converted">
-            {formatPrice(product.price).eur} | {formatPrice(product.price).gbp}
           </div>
         </div>
       </Link>

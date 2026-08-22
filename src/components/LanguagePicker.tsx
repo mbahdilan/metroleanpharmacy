@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { useCurrency, SUPPORTED_CURRENCIES } from '@/context/CurrencyContext';
 
 const LANGUAGES = [
   { code: 'en', flagCode: 'us', phrase: 'Continue in English'       },
@@ -11,6 +12,14 @@ const LANGUAGES = [
   { code: 'es', flagCode: 'es', phrase: 'Continuar en español'      },
   { code: 'ru', flagCode: 'ru', phrase: 'Продолжить на русском'     },
   { code: 'sq', flagCode: 'al', phrase: 'Vazhdo në shqip'           },
+];
+
+const CURRENCIES = [
+  { code: 'USD', flagCode: 'us', label: 'US Dollar ($)' },
+  { code: 'GBP', flagCode: 'gb', label: 'British Pound (£)' },
+  { code: 'CAD', flagCode: 'ca', label: 'Canadian Dollar (CA$)' },
+  { code: 'AUD', flagCode: 'au', label: 'Australian Dollar (A$)' },
+  { code: 'EUR', flagCode: 'eu', label: 'Euro (€)' },
 ];
 
 const COUNTRY_TO_LANG: Record<string, string> = {
@@ -45,6 +54,10 @@ export default function LanguagePicker() {
   const [suggested, setSuggested]     = useState<string | null>(null);
   const [activeLang, setActiveLang]   = useState('en');
   const [mounted, setMounted]         = useState(false);
+  const [detectedCurrency, setDetectedCurrency] = useState('USD');
+  const [step, setStep]               = useState<'language' | 'currency'>('language');
+  const [pendingLang, setPendingLang] = useState<string | null>(null);
+  const { setCurrency } = useCurrency();
 
   useEffect(() => {
     setMounted(true);
@@ -54,19 +67,21 @@ export default function LanguagePicker() {
     if (getCookie('googtrans') || sessionStorage.getItem('lang-picker-shown')) return;
     sessionStorage.setItem('lang-picker-shown', '1');
 
-    fetch('https://ipapi.co/country/')
-      .then(r => r.text())
-      .then(cc => {
-        const lang = COUNTRY_TO_LANG[cc.trim().toUpperCase()];
+    fetch('https://ipapi.co/json/')
+      .then(r => r.json())
+      .then(data => {
+        const lang = COUNTRY_TO_LANG[(data.country || '').toUpperCase()];
         if (lang) setSuggested(lang);
+        if (SUPPORTED_CURRENCIES.includes(data.currency)) setDetectedCurrency(data.currency);
         setIsOpen(true);
       })
       .catch(() => setIsOpen(true));
   }, []);
 
-  const selectLanguage = useCallback((code: string) => {
+  const finalizeSelection = useCallback((code: string) => {
     setActiveLang(code);
     setIsOpen(false);
+    setStep('language');
 
     // Wipe every storage slot GTranslate could be reading from
     const host = window.location.hostname;
@@ -83,6 +98,26 @@ export default function LanguagePicker() {
     window.location.replace(
       window.location.pathname + window.location.search + window.location.hash
     );
+  }, []);
+
+  const selectLanguage = useCallback((code: string) => {
+    if (code === 'en') {
+      setPendingLang(code);
+      setStep('currency');
+      return;
+    }
+    setCurrency(detectedCurrency);
+    finalizeSelection(code);
+  }, [detectedCurrency, setCurrency, finalizeSelection]);
+
+  const selectCurrency = useCallback((code: string) => {
+    setCurrency(code);
+    finalizeSelection(pendingLang ?? 'en');
+  }, [setCurrency, finalizeSelection, pendingLang]);
+
+  const closeModal = useCallback(() => {
+    setIsOpen(false);
+    setStep('language');
   }, []);
 
   const current = LANGUAGES.find(l => l.code === activeLang) ?? LANGUAGES[0];
@@ -112,75 +147,130 @@ export default function LanguagePicker() {
       {mounted && isOpen && createPortal(
         <div
           className="lang-overlay"
-          onClick={() => setIsOpen(false)}
+          onClick={closeModal}
           role="dialog"
           aria-modal="true"
-          aria-label="Language selector"
+          aria-label={step === 'language' ? 'Language selector' : 'Currency selector'}
         >
           <div
             className="lang-modal"
             onClick={e => e.stopPropagation()}
           >
-            {/* Header */}
-            <div className="lang-modal-header">
-              <div className="lang-modal-globe">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                </svg>
-              </div>
-              <h2 className="lang-modal-title">Choose Your Language</h2>
-              {suggested && suggested !== 'en' && (
-                <p className="lang-modal-sub">
-                  We detected your location —&nbsp;
-                  <strong style={{ color: '#00d2ff' }}>
-                    {LANGUAGES.find(l => l.code === suggested)?.phrase}
-                  </strong>
-                  &nbsp;is highlighted for you.
-                </p>
-              )}
-            </div>
-
-            {/* Close button */}
-            <button className="lang-modal-close" onClick={() => setIsOpen(false)} aria-label="Close">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                <path d="M18 6 6 18M6 6l12 12" />
-              </svg>
-            </button>
-
-            {/* Language grid */}
-            <div className="lang-grid">
-              {LANGUAGES.map(lang => (
-                <button
-                  key={lang.code}
-                  className={[
-                    'lang-card',
-                    lang.code === activeLang  ? 'lang-card--active'    : '',
-                    lang.code === suggested   ? 'lang-card--suggested' : '',
-                  ].filter(Boolean).join(' ')}
-                  onClick={() => selectLanguage(lang.code)}
-                >
-                  {lang.code === suggested && (
-                    <span className="lang-card-badge">Suggested</span>
+            {step === 'language' ? (
+              <>
+                {/* Header */}
+                <div className="lang-modal-header">
+                  <div className="lang-modal-globe">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                    </svg>
+                  </div>
+                  <h2 className="lang-modal-title">Choose Your Language</h2>
+                  {suggested && suggested !== 'en' && (
+                    <p className="lang-modal-sub">
+                      We detected your location —&nbsp;
+                      <strong style={{ color: '#00d2ff' }}>
+                        {LANGUAGES.find(l => l.code === suggested)?.phrase}
+                      </strong>
+                      &nbsp;is highlighted for you.
+                    </p>
                   )}
-                  {lang.code === activeLang && (
-                    <span className="lang-card-check">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M20 6 9 17l-5-5" />
-                      </svg>
-                    </span>
-                  )}
-                  <img
-                    src={`https://flagcdn.com/w80/${lang.flagCode}.png`}
-                    alt={lang.code}
-                    className="lang-card-flag-img"
-                    width={56}
-                    height={42}
-                  />
-                  <span className="lang-card-phrase">{lang.phrase}</span>
+                </div>
+
+                {/* Close button */}
+                <button className="lang-modal-close" onClick={closeModal} aria-label="Close">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <path d="M18 6 6 18M6 6l12 12" />
+                  </svg>
                 </button>
-              ))}
-            </div>
+
+                {/* Language grid */}
+                <div className="lang-grid">
+                  {LANGUAGES.map(lang => (
+                    <button
+                      key={lang.code}
+                      className={[
+                        'lang-card',
+                        lang.code === activeLang  ? 'lang-card--active'    : '',
+                        lang.code === suggested   ? 'lang-card--suggested' : '',
+                      ].filter(Boolean).join(' ')}
+                      onClick={() => selectLanguage(lang.code)}
+                    >
+                      {lang.code === suggested && (
+                        <span className="lang-card-badge">Suggested</span>
+                      )}
+                      {lang.code === activeLang && (
+                        <span className="lang-card-check">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20 6 9 17l-5-5" />
+                          </svg>
+                        </span>
+                      )}
+                      <img
+                        src={`https://flagcdn.com/w80/${lang.flagCode}.png`}
+                        alt={lang.code}
+                        className="lang-card-flag-img"
+                        width={56}
+                        height={42}
+                      />
+                      <span className="lang-card-phrase">{lang.phrase}</span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Header */}
+                <div className="lang-modal-header">
+                  <div className="lang-modal-globe">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 6v6l4 2" />
+                    </svg>
+                  </div>
+                  <h2 className="lang-modal-title">Choose Your Currency</h2>
+                  <p className="lang-modal-sub">
+                    We detected&nbsp;
+                    <strong style={{ color: '#00d2ff' }}>{detectedCurrency}</strong>
+                    &nbsp;based on your location — feel free to pick a different one.
+                  </p>
+                </div>
+
+                {/* Close button */}
+                <button className="lang-modal-close" onClick={closeModal} aria-label="Close">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <path d="M18 6 6 18M6 6l12 12" />
+                  </svg>
+                </button>
+
+                {/* Currency grid */}
+                <div className="lang-grid">
+                  {CURRENCIES.map(cur => (
+                    <button
+                      key={cur.code}
+                      className={[
+                        'lang-card',
+                        cur.code === detectedCurrency ? 'lang-card--suggested' : '',
+                      ].filter(Boolean).join(' ')}
+                      onClick={() => selectCurrency(cur.code)}
+                    >
+                      {cur.code === detectedCurrency && (
+                        <span className="lang-card-badge">Suggested</span>
+                      )}
+                      <img
+                        src={`https://flagcdn.com/w80/${cur.flagCode}.png`}
+                        alt={cur.code}
+                        className="lang-card-flag-img"
+                        width={56}
+                        height={42}
+                      />
+                      <span className="lang-card-phrase">{cur.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>,
         document.body

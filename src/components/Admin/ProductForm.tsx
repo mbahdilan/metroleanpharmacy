@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase, Product, Category } from '@/lib/supabase';
-import { useExchangeRates } from '@/hooks/useExchangeRates';
 
 export default function ProductForm({ 
   initialData, 
@@ -19,7 +18,6 @@ export default function ProductForm({
   onDelete?: () => void
 }) {
   const router = useRouter();
-  const { formatPrice } = useExchangeRates();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -417,11 +415,6 @@ export default function ProductForm({
         <div className="form-box">
           <label className="form-label">Retail Price ($)</label>
           <input name="price" type="number" step="0.01" value={formData.price} onChange={handleChange} className="form-input-clean" />
-          {formData.price && (
-            <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '4px' }}>
-              ≈ {formatPrice(formData.price).eur} | {formatPrice(formData.price).gbp}
-            </div>
-          )}
         </div>
 
         <div className="form-box">
