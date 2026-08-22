@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
 
 export async function POST(req: Request) {
   try {
-    const { formData, items, totalPrice, selectedPayment } = await req.json();
+    const { formData, items, totalPrice } = await req.json();
 
     const itemsListHtml = items
       .map((item: any) => `
@@ -36,21 +36,19 @@ export async function POST(req: Request) {
     `;
 
     // 1. Send Email to Admins (Internal)
-    // User requested notifications to both office@metrolean.com and personal email
     await transporter.sendMail({
-      from: '"Metrolean Market" <office@metrolean.com>',
+      from: '"Metrolean-Pharma Health Tips" <office@metrolean.com>',
       to: 'office@metrolean.com, mbahdilan2006@gmail.com',
-      subject: `[Market Order] New Request from ${formData.name}`,
+      subject: `[New Order] ${formData.name}`,
       html: `
         <div style="${emailStyle}">
-          <h1 style="color: #c4a962; font-size: 24px; margin-bottom: 24px;">New Market Order Alert</h1>
-          <p><strong>Client:</strong> ${formData.name}</p>
+          <h1 style="color: #2563eb; font-size: 24px; margin-bottom: 24px;">New Order Received</h1>
+          <p><strong>Customer:</strong> ${formData.name}</p>
           <p><strong>Email:</strong> ${formData.email}</p>
           <p><strong>Phone:</strong> ${formData.phone}</p>
           <p><strong>Delivery Address:</strong> ${formData.address}, ${formData.city}, ${formData.zip}, ${formData.country}</p>
-          <p><strong>Payment Method:</strong> ${selectedPayment}</p>
-          
-          <h2 style="font-size: 18px; margin-top: 32px; color: #1e293b;">Order Inventory</h2>
+
+          <h2 style="font-size: 18px; margin-top: 32px; color: #1e293b;">Order Details</h2>
           <table style="width: 100%; border-collapse: collapse;">
             <thead>
               <tr style="text-align: left; border-bottom: 2px solid #e2e8f0; color: #64748b; font-size: 14px;">
@@ -63,14 +61,14 @@ export async function POST(req: Request) {
               ${itemsListHtml}
             </tbody>
           </table>
-          
+
           <div style="margin-top: 24px; text-align: right;">
-            <p style="font-size: 18px; font-weight: bold; color: #0066cc;">Calculated Total: $${totalPrice.toFixed(2)}</p>
+            <p style="font-size: 18px; font-weight: bold; color: #0066cc;">Order Total: $${totalPrice.toFixed(2)}</p>
           </div>
-          
+
           <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 32px 0;" />
           <p style="font-size: 14px; color: #64748b; background: #f8fafc; padding: 15px; border-radius: 8px;">
-            <strong>Metrolean Protocol:</strong> Please review this request against available stash and send the payment confirmation to the client.
+            Reach out to the customer to confirm payment and delivery details.
           </p>
         </div>
       `,
@@ -78,19 +76,19 @@ export async function POST(req: Request) {
 
     // 2. Send Confirmation Email to Customer
     await transporter.sendMail({
-      from: '"Metrolean Market" <office@metrolean.com>',
+      from: '"Metrolean-Pharma Health Tips" <office@metrolean.com>',
       to: formData.email,
-      subject: 'Order Acknowledgment - Metrolean Market',
+      subject: 'Order Confirmation - Metrolean-Pharma Health Tips',
       html: `
         <div style="${emailStyle}">
           <div style="text-align: center; margin-bottom: 32px;">
-             <h1 style="color: #c4a962; font-size: 28px; margin: 0;">Metrolean Market</h1>
-             <p style="color: #64748b; font-size: 14px; margin-top: 4px;">Premium Underground Solutions</p>
+             <h1 style="color: #2563eb; font-size: 28px; margin: 0;">Metrolean-Pharma Health Tips</h1>
+             <p style="color: #64748b; font-size: 14px; margin-top: 4px;">Evidence-based health guides &amp; everyday pharmacy essentials</p>
           </div>
-          
+
           <p>Hello ${formData.name},</p>
-          <p>This is to acknowledge that we have received your stash request. Our syndicate is currently reviewing your order for availability.</p>
-          
+          <p>Thanks for your order! We've received it and it's being prepared.</p>
+
           <div style="background: #f1f5f9; padding: 24px; border-radius: 16px; margin: 32px 0;">
             <h3 style="margin-top: 0; font-size: 16px; color: #1e293b;">Order Summary</h3>
             <table style="width: 100%; border-collapse: collapse;">
@@ -100,18 +98,17 @@ export async function POST(req: Request) {
               Total amount: $${totalPrice.toFixed(2)}
             </p>
           </div>
-          
+
           <p><strong>Next Steps:</strong></p>
-          <p>You will receive a follow-up via <strong>WhatsApp</strong> or <strong>Email</strong> shortly with final payment instructions and delivery timelines.</p>
-          
+          <p>Our team will call, text, or WhatsApp you shortly to confirm payment and delivery details.</p>
+
           <p style="margin-top: 48px; border-top: 1px solid #e2e8f0; padding-top: 24px;">
             Best regards,<br />
-            <strong>Dispatch Operations Team</strong><br />
-            Metrolean Market
+            <strong>Metrolean-Pharma Health Tips</strong>
           </p>
-          
+
           <div style="text-align: center; margin-top: 32px; font-size: 12px; color: #94a3b8;">
-            <p>© ${new Date().getFullYear()} Metrolean Market. All stash orders are subject to broker verification.</p>
+            <p>© ${new Date().getFullYear()} Metrolean-Pharma Health Tips.</p>
           </div>
         </div>
       `,

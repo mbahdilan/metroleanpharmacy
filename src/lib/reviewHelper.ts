@@ -1,5 +1,5 @@
 /**
- * Helper to generate random "layman" reviews for stash products.
+ * Helper to generate random "layman" reviews for products.
  */
 
 const OCCUPATIONS = [

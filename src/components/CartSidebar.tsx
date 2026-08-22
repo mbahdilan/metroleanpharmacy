@@ -16,7 +16,7 @@ export default function CartSidebar() {
       <aside className="cart-sidebar shadow-premium">
         <div className="cart-header">
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <h2 style={{ margin: 0 }}>Your Stash</h2>
+            <h2 style={{ margin: 0 }}>Your Cart</h2>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
               {items.length} {items.length === 1 ? 'item' : 'items'} in list
             </span>
@@ -28,13 +28,13 @@ export default function CartSidebar() {
           {items.length === 0 ? (
             <div className="empty-cart">
               <span style={{ fontSize: '3rem', marginBottom: '1rem' }}>🛒</span>
-              <p style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>Your order list is empty</p>
-              <button 
-                className="btn-secondary" 
+              <p style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>Your cart is empty</p>
+              <button
+                className="btn-secondary"
                 onClick={() => setCartOpen(false)}
                 style={{ marginTop: '1rem', width: '100%', borderRadius: '12px' }}
               >
-                Browse Market
+                Browse Shop
               </button>
             </div>
           ) : (
@@ -90,7 +90,7 @@ export default function CartSidebar() {
               </div>
             </div>
             <Link href="/cart" onClick={() => setCartOpen(false)} className="view-cart-btn-secondary" style={{ display: 'block', textAlign: 'center', marginBottom: '1rem', fontWeight: 700, color: 'var(--accent)', textDecoration: 'underline', fontSize: '0.9rem' }}>
-              View Full Stash
+              View Full Cart
             </Link>
             <Link href="/checkout" onClick={() => setCartOpen(false)} className="checkout-btn" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               Proceed to Secure Checkout

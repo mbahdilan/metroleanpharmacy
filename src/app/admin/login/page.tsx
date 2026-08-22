@@ -56,7 +56,7 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin}>
           {error && (
-            <div className="syndicate-warning-banner" style={{ padding: '0.75rem', marginBottom: '1.5rem' }}>
+            <div className="warning-banner" style={{ padding: '0.75rem', marginBottom: '1.5rem' }}>
               <span className="warning-text" style={{ fontSize: '0.85rem' }}>{error}</span>
             </div>
           )}
@@ -69,7 +69,7 @@ export default function LoginPage() {
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
               required 
-              placeholder="admin@medisyrup.com"
+              placeholder="admin@metroleanpharma.com"
             />
           </div>
 

@@ -5,8 +5,8 @@ import AnnouncementPopup from '@/components/AnnouncementPopup';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Metrolean Market — The Underground Collection',
-  description: 'Premium legally approved cannabis, syrups, and psychedelics. Elevate your state of consciousness.',
+  title: 'Metrolean-Pharma Health Tips',
+  description: 'Evidence-based medication guides plus a trusted shop for everyday OTC pharmacy essentials.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

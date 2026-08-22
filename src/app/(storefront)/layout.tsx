@@ -14,34 +14,35 @@ export default function StorefrontLayout({ children }: { children: React.ReactNo
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '3rem', textAlign: 'left' }}>
           <div>
             <Link href="/">
-              <img src="/images/logo_for_homepage-removebg-preview.png" alt="The Metrolean Logo" style={{ maxHeight: '80px', marginBottom: '1.5rem', display: 'block', border: 'none', outline: 'none' }} />
+              <img src="/images/logo-mck.png.jpeg" alt="Metrolean-Pharma Health Tips" style={{ maxHeight: '80px', marginBottom: '1.5rem', display: 'block', border: 'none', outline: 'none' }} />
             </Link>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-              Providing premium, legally approved cannabis, syrups, and psychedelics to discerning individuals worldwide. Now with local hubs in <strong>Germany</strong>, the <strong>USA</strong>, and <strong>England</strong> to serve you better.
+              Evidence-based medication guides and a trusted shop for everyday over-the-counter pharmacy essentials.
             </p>
           </div>
           <div>
             <h4 style={{ fontSize: '0.9rem', fontWeight: 800, marginBottom: '1.5rem', textTransform: 'uppercase', color: 'var(--accent)' }}>Shop</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <Link href="/shop?category=relaxatives" className="footer-link">Relaxatives</Link>
-              <Link href="/shop?category=strains" className="footer-link">Strains</Link>
-              <Link href="/shop?category=syrups" className="footer-link">Syrups</Link>
-              <Link href="/shop?category=others" className="footer-link">Others</Link>
+              <Link href="/shop?category=cold-flu" className="footer-link">Cold & Flu</Link>
+              <Link href="/shop?category=pain-relief" className="footer-link">Pain Relief</Link>
+              <Link href="/shop?category=allergy-hayfever" className="footer-link">Allergy & Hayfever</Link>
+              <Link href="/shop?category=vitamins-supplements" className="footer-link">Vitamins & Supplements</Link>
             </div>
           </div>
           <div>
             <h4 style={{ fontSize: '0.9rem', fontWeight: 800, marginBottom: '1.5rem', textTransform: 'uppercase', color: 'var(--accent)' }}>Support</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <Link href="/contact" className="footer-link">Contact Us</Link>
-              <Link href="/about" className="footer-link" style={{ color: 'var(--text-secondary)' }}>About Metrolean Market</Link>
+              <Link href="/blog" className="footer-link" style={{ color: 'var(--text-secondary)' }}>Health Guides</Link>
+              <Link href="/about" className="footer-link" style={{ color: 'var(--text-secondary)' }}>About Us</Link>
             </div>
           </div>
           <div>
-            <h4 style={{ fontSize: '0.9rem', fontWeight: 800, marginBottom: '1.5rem', textTransform: 'uppercase', color: 'var(--accent)' }}>Compliance</h4>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 800, marginBottom: '1.5rem', textTransform: 'uppercase', color: 'var(--accent)' }}>Legal</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <Link href="/privacy" className="footer-link" style={{ color: 'var(--text-secondary)' }}>Privacy Policy</Link>
               <Link href="/terms" className="footer-link" style={{ color: 'var(--text-secondary)' }}>Terms of Service</Link>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>© {new Date().getFullYear()} Metrolean Market</span>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>© {new Date().getFullYear()} Metrolean-Pharma Health Tips</span>
             </div>
           </div>
         </div>

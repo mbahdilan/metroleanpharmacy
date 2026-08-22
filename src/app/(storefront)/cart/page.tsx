@@ -34,17 +34,17 @@ export default function CartPage() {
 
   return (
     <div className="cart-page">
-      <h1 className="cart-page-title">Syndicate Order</h1>
+      <h1 className="cart-page-title">Your Cart</h1>
 
       <div className="cart-page-grid">
         {/* ── Left Column: Product List ── */}
         <div className="cart-page-left">
           {items.length === 0 ? (
             <div className="cart-page-empty">
-              <span className="cart-page-empty-icon">💊</span>
-              <h3>Your prescription is empty</h3>
-              <p>Browse our premium stash supplies and add items to your syndicate order.</p>
-              <Link href="/shop" className="btn-primary" style={{ marginTop: '1.5rem' }}>Browse Market</Link>
+              <span className="cart-page-empty-icon">🛒</span>
+              <h3>Your cart is empty</h3>
+              <p>Browse our shop and add items to your cart.</p>
+              <Link href="/shop" className="btn-primary" style={{ marginTop: '1.5rem' }}>Browse Shop</Link>
             </div>
           ) : (
             <>
@@ -135,7 +135,7 @@ export default function CartPage() {
                   ← Continue Shopping
                 </Link>
                 <button className="cart-clear-btn" onClick={clearCart}>
-                  Clear syndicate order
+                  Clear cart
                 </button>
               </div>
             </>
@@ -152,7 +152,7 @@ export default function CartPage() {
               <input
                 type="text"
                 className="voucher-input"
-                placeholder="Institutional Code"
+                placeholder="Promo Code"
                 value={voucher}
                 onChange={(e) => setVoucher(e.target.value)}
               />
@@ -169,12 +169,12 @@ export default function CartPage() {
               </div>
               {appliedDiscount > 0 && (
                 <div className="summary-line summary-line-discount">
-                  <span>Institutional Discount ({appliedDiscount}%)</span>
+                  <span>Discount ({appliedDiscount}%)</span>
                   <span>-{formatPrice(discountAmount).usd}</span>
                 </div>
               )}
               <div className="summary-line">
-                <span>Handling & Delivery</span>
+                <span>Shipping</span>
                 <span>{deliveryFee === 0 ? 'FREE' : formatPrice(deliveryFee).usd}</span>
               </div>
             </div>
@@ -193,7 +193,7 @@ export default function CartPage() {
             {/* Compliance Note */}
             <div className="order-summary-note">
               <span className="order-summary-note-icon">📋</span>
-              <p>By proceeding, you verify that this order complies with <strong>metrolean syndicate standards</strong>. <a href="/terms" style={{ textDecoration: 'underline' }}>Legal compliance</a></p>
+              <p>By proceeding, you agree to our <a href="/terms" style={{ textDecoration: 'underline' }}>Terms of Service</a>.</p>
             </div>
 
             {/* Primary Action */}

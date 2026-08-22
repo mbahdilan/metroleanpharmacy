@@ -38,8 +38,8 @@ export default function AnnouncementPopup() {
       padding: '20px'
     }}>
       <div style={{
-        backgroundColor: 'var(--bg-main)',
-        color: 'var(--text-main)',
+        backgroundColor: 'var(--bg-card)',
+        color: 'var(--text-primary)',
         padding: '2.5rem',
         borderRadius: '15px',
         maxWidth: '500px',
@@ -71,35 +71,26 @@ export default function AnnouncementPopup() {
           ✕
         </button>
         
-        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🌍</div>
-        
-        <h2 style={{ 
-          fontSize: '1.8rem', 
-          fontWeight: 800, 
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>💊</div>
+
+        <h2 style={{
+          fontSize: '1.8rem',
+          fontWeight: 800,
           marginBottom: '1rem',
           color: 'var(--accent)',
           textTransform: 'uppercase',
           letterSpacing: '0.05em'
         }}>
-          Global Hubs Now Active
+          Welcome to Metrolean-Pharma
         </h2>
-        
-        <p style={{ 
-          fontSize: '1rem', 
-          lineHeight: '1.6', 
-          marginBottom: '1.5rem',
-          color: 'var(--text-secondary)'
-        }}>
-          We are excited to announce that we now have operational hubs in <strong>Germany</strong>, the <strong>USA</strong>, and <strong>England</strong>. 
-        </p>
-        
-        <p style={{ 
-          fontSize: '1rem', 
-          lineHeight: '1.6', 
+
+        <p style={{
+          fontSize: '1rem',
+          lineHeight: '1.6',
           marginBottom: '2rem',
           color: 'var(--text-secondary)'
         }}>
-          No matter which region you are from, we are here to serve you and make things easier for you with faster, more discreet delivery.
+          Evidence-based medication guides plus a shop for everyday over-the-counter essentials, with fast, reliable delivery.
         </p>
 
         <button 

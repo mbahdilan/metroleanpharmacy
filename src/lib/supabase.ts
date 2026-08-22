@@ -24,10 +24,10 @@ export type Product = {
   compare_at_price: string | null;
   sku: string;
   volume_ml: number;
-  scent_family: string; // Used for "Syndicate Division"
-  top_notes: string; // Used for "Active Agent"
-  middle_notes: string; // Used for "Secondary Agent"
-  base_notes: string; // Used for "Base/Excipients"
+  scent_family: string | null; // legacy field, unused for OTC pharmacy products
+  top_notes: string; // Active ingredient
+  middle_notes: string; // legacy field, unused for OTC pharmacy products
+  base_notes: string; // legacy field, unused for OTC pharmacy products
   units_in_stock: number;
   is_featured: boolean;
   is_active: boolean;
@@ -35,7 +35,6 @@ export type Product = {
   image_urls: string[];
   created_at: string;
   
-  // Syndicate Specific Fields
   dosage_form: 'Solid' | 'Liquid' | 'Cream' | 'Injection' | 'Other';
   therapeutic_class: string;
   expiry_date: string;

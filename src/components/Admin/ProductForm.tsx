@@ -29,22 +29,17 @@ export default function ProductForm({
     description: initialData?.description || '',
     short_description: initialData?.short_description || '',
     price: initialData?.price || '',
-    compare_at_price: initialData?.compare_at_price || '', // Used for "Quantity" in Relaxatives/Strains
+    compare_at_price: initialData?.compare_at_price || '',
     category_id: initialData?.category_id || '',
-    scent_family: initialData?.scent_family || (category || 'General'),
+    scent_family: initialData?.scent_family || null,
     volume_ml: initialData?.volume_ml || 0,
-    top_notes: initialData?.top_notes || (
-      category === 'Relaxatives' ? 'serotonin 2a receptors' :
-      category === 'Strains' ? 'phytocannabinoids Delta 9-Tetrahydrocannabinol (THC), Cannabidiol (CBD)' : ''
-    ),
+    top_notes: initialData?.top_notes || '',
     middle_notes: initialData?.middle_notes || '',
     base_notes: initialData?.base_notes || '',
     units_in_stock: initialData?.units_in_stock || 0,
     is_featured: initialData?.is_featured || false,
     is_active: initialData?.is_active ?? true,
     image_urls: initialData?.image_urls || [],
-    
-    // Syndicate Specific
     image_url: initialData?.image_url || initialData?.image_urls?.[0] || '',
     dosage_form: initialData?.dosage_form || 'Solid',
     therapeutic_class: initialData?.therapeutic_class || (category || ''),
@@ -211,7 +206,7 @@ export default function ProductForm({
 
     setLoading(false);
     if (error) {
-      alert('Stash record error: ' + error.message);
+      alert('Product save error: ' + error.message);
     } else {
       // If product saved successfully, clean up deleted images from storage
       if (deletedImages.length > 0) {
@@ -391,7 +386,7 @@ export default function ProductForm({
 
       <div className="form-header">
         <h2>{initialData ? 'Update Record' : 'Register Product'}</h2>
-        <p>Complete the profile for stash inventory classification.</p>
+        <p>Complete the product profile below.</p>
       </div>
 
       <div className="form-content-grid">
@@ -415,8 +410,8 @@ export default function ProductForm({
         </div>
 
         <div className="form-box full-width">
-          <label className="form-label">Stash Description</label>
-          <textarea name="description" value={formData.description} onChange={handleChange} className="form-input-clean" style={{ minHeight: '80px', resize: 'none' }} placeholder="Stash details and effects..." />
+          <label className="form-label">Product Description</label>
+          <textarea name="description" value={formData.description} onChange={handleChange} className="form-input-clean" style={{ minHeight: '80px', resize: 'none' }} placeholder="Product details and usage..." />
         </div>
 
         <div className="form-box">
@@ -439,29 +434,25 @@ export default function ProductForm({
           <input name="min_quantity" type="number" min="1" value={formData.min_quantity} onChange={handleChange} className="form-input-clean" placeholder="At least how many must be bought?" />
         </div>
 
-        {(category === 'Relaxatives' || category === 'Strains') && (
-          <div className="form-box full-width">
-            <label className="form-label">Quantity</label>
-            <input name="compare_at_price" value={formData.compare_at_price} onChange={handleChange} className="form-input-clean" placeholder="e.g., 10 tabs, 5g" />
+        <div className="form-box full-width">
+          <label className="form-label">Compare-at Price ($)</label>
+          <input name="compare_at_price" type="number" step="0.01" value={formData.compare_at_price} onChange={handleChange} className="form-input-clean" placeholder="Optional — shown as a strikethrough sale price" />
+        </div>
+
+        {(formData.dosage_form === 'Liquid' || formData.dosage_form === 'Cream') && (
+          <div className="form-box">
+            <label className="form-label">Dosage/Volume (ml)</label>
+            <input name="volume_ml" type="number" value={formData.volume_ml} onChange={handleChange} className="form-input-clean" />
           </div>
         )}
-
-        {(category === 'Syrups' || category === 'Others') && (
-          <>
-            <div className="form-box">
-              <label className="form-label">Dosage/Volume (ml or mg)</label>
-              <input name="volume_ml" type="number" value={formData.volume_ml} onChange={handleChange} className="form-input-clean" />
-            </div>
-            <div className="form-box">
-              <label className="form-label">Manufacturer</label>
-              <input name="manufacturer" value={formData.manufacturer} onChange={handleChange} className="form-input-clean" />
-            </div>
-            <div className="form-box full-width">
-              <label className="form-label">Expiry Date</label>
-              <input name="expiry_date" type="date" value={formData.expiry_date} onChange={handleChange} className="form-input-clean" />
-            </div>
-          </>
-        )}
+        <div className="form-box">
+          <label className="form-label">Manufacturer</label>
+          <input name="manufacturer" value={formData.manufacturer} onChange={handleChange} className="form-input-clean" />
+        </div>
+        <div className="form-box full-width">
+          <label className="form-label">Expiry Date</label>
+          <input name="expiry_date" type="date" value={formData.expiry_date} onChange={handleChange} className="form-input-clean" />
+        </div>
 
         <div className="form-box full-width">
           <label className="form-label">Active Ingredient</label>
@@ -500,7 +491,7 @@ export default function ProductForm({
           <input type="file" multiple accept="image/*" onChange={handleImageUpload} ref={fileInputRef} style={{ display: 'none' }} disabled={uploading} />
           <div className="upload-icon">☁️</div>
           <div className="upload-text">
-            <h4>Choose stash photos or drag & drop here.</h4>
+            <h4>Choose product photos or drag & drop here.</h4>
             <p>JPEG, PNG - Up to 50MB (Max 4 images)</p>
           </div>
           <button type="button" className="btn-reset" style={{ marginTop: '1rem' }}>Browse files</button>

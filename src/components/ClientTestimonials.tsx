@@ -21,10 +21,10 @@ export default function ClientTestimonials() {
   };
 
   const reviews = [
-    { name: 'Ghost', role: 'Syndicate Connect', text: "Metrolean Market has been our primary source for 2 years. Their reliability and stealth shipping are unmatched." },
-    { name: 'Marcus T.', role: 'Connoisseur', text: "The ordering process is seamless, and the quality of the premium syrups is absolutely top-tier." },
-    { name: 'Elena R.', role: 'Local Distributor', text: "Quality exotic strains and a very discreet customer support team. Highly recommended for bulk stash." },
-    { name: 'J. Wilson', role: 'Nightlife Provider', text: "The range of relaxatives allows us to provide exclusive experiences without compromising on potency." }
+    { name: 'Sarah K.', role: 'Verified Customer', text: "Metrolean-Pharma has been our go-to for two years. Fast shipping and the health guides actually helped me understand what I was taking." },
+    { name: 'Marcus T.', role: 'Verified Customer', text: "The ordering process is seamless, and the quality of the products is top-notch." },
+    { name: 'Elena R.', role: 'Verified Customer', text: "Reliable stock and a genuinely helpful support team. Highly recommended for family essentials." },
+    { name: 'J. Wilson', role: 'Verified Customer', text: "Clear labeling and honest descriptions — exactly what I want from an online pharmacy shop." }
   ];
 
   return (
@@ -33,7 +33,7 @@ export default function ClientTestimonials() {
         {/* Our Clients Card */}
         <div style={sharedCardStyle}>
           <div>
-            <h3 style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', fontWeight: 700 }}>Our Network</h3>
+            <h3 style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', fontWeight: 700 }}>Our Customers</h3>
             <div style={{ display: 'flex', marginBottom: '1rem' }}>
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} style={{
@@ -48,12 +48,12 @@ export default function ClientTestimonials() {
           </div>
           <div>
             <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>12K+</div>
-            <div style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '1.5rem' }}>Verified Connects</div>
-            <button onClick={() => setIsModalOpen(true)} style={{ 
-              background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 700, 
-              display: 'flex', alignItems: 'center', gap: '0.5rem', padding: 0, cursor: 'pointer', fontSize: '0.95rem' 
+            <div style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '1.5rem' }}>Happy Customers</div>
+            <button onClick={() => setIsModalOpen(true)} style={{
+              background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 700,
+              display: 'flex', alignItems: 'center', gap: '0.5rem', padding: 0, cursor: 'pointer', fontSize: '0.95rem'
             }}>
-              View intel <span style={{ fontSize: '1.2rem' }}>›</span>
+              Read reviews <span style={{ fontSize: '1.2rem' }}>›</span>
             </button>
           </div>
         </div>
@@ -61,12 +61,12 @@ export default function ClientTestimonials() {
         {/* Success Rate Card */}
         <div style={sharedCardStyle}>
           <div>
-            <h3 style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', fontWeight: 700 }}>Drop Success</h3>
+            <h3 style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', fontWeight: 700 }}>Delivery Success</h3>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
               <div style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-primary)' }}>99%</div>
-              <div style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Stealth Delivery</div>
+              <div style={{ color: 'var(--text-muted)', fontWeight: 600 }}>On-Time Delivery</div>
             </div>
             <div style={{ width: '80px', height: '80px', position: 'relative' }}>
               <svg viewBox="0 0 36 36" style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }}>
@@ -78,7 +78,7 @@ export default function ClientTestimonials() {
         </div>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Underground Feedback">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Customer Reviews">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           {reviews.map((r, i) => (
             <div key={i} style={{ paddingBottom: '2rem', borderBottom: i === reviews.length - 1 ? 'none' : '1px solid var(--border)' }}>

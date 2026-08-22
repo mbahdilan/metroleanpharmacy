@@ -24,8 +24,6 @@ function ShopContent() {
   const [sortBy, setSortBy] = useState<string>('newest');
   const [priceRange, setPriceRange] = useState<number[]>([0, 5000]);
   const [selectedDosageForms, setSelectedDosageForms] = useState<string[]>([]);
-  const [selectedVolumes, setSelectedVolumes] = useState<number[]>([]);
-  const [selectedStrains, setSelectedStrains] = useState<string[]>([]);
   const [selectedTherapeutics, setSelectedTherapeutics] = useState<string[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -86,7 +84,7 @@ function ShopContent() {
   // Reset to page 1 on filter or search change
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedCategory, searchTerm, sortBy, priceRange, selectedDosageForms, selectedVolumes, selectedStrains, selectedTherapeutics]);
+  }, [selectedCategory, searchTerm, sortBy, priceRange, selectedDosageForms, selectedTherapeutics]);
 
   const filteredAndSorted = products
     .filter(p => {
@@ -98,11 +96,9 @@ function ShopContent() {
       const matchesPrice = priceValue >= priceRange[0] && priceValue <= priceRange[1];
       
       const matchesDosageForm = selectedDosageForms.length === 0 || selectedDosageForms.includes(p.dosage_form);
-      const matchesVolume = selectedVolumes.length === 0 || selectedVolumes.includes(p.volume_ml);
-      const matchesStrain = selectedStrains.length === 0 || selectedStrains.includes(p.scent_family);
       const matchesTherapeutic = selectedTherapeutics.length === 0 || selectedTherapeutics.includes(p.therapeutic_class);
-      
-      return matchesCategory && matchesSearch && matchesPrice && matchesDosageForm && matchesVolume && matchesStrain && matchesTherapeutic;
+
+      return matchesCategory && matchesSearch && matchesPrice && matchesDosageForm && matchesTherapeutic;
     })
     .sort((a, b) => {
       if (sortBy === 'price-low-high') return parseFloat(a.price) - parseFloat(b.price);
@@ -123,18 +119,6 @@ function ShopContent() {
     );
   };
 
-  const toggleVolume = (vol: number) => {
-    setSelectedVolumes(prev => 
-      prev.includes(vol) ? prev.filter(v => v !== vol) : [...prev, vol]
-    );
-  };
-
-  const toggleStrain = (strain: string) => {
-    setSelectedStrains(prev => 
-      prev.includes(strain) ? prev.filter(c => c !== strain) : [...prev, strain]
-    );
-  };
-
   const toggleTherapeutic = (tClass: string) => {
     setSelectedTherapeutics(prev => 
       prev.includes(tClass) ? prev.filter(t => t !== tClass) : [...prev, tClass]
@@ -144,8 +128,6 @@ function ShopContent() {
   const clearFilters = () => {
     setSelectedCategory('all');
     setSelectedDosageForms([]);
-    setSelectedVolumes([]);
-    setSelectedStrains([]);
     setSelectedTherapeutics([]);
     setPriceRange([0, 5000]);
     setSortBy('newest');
@@ -219,15 +201,12 @@ function ShopContent() {
 
         .hero-title {
           font-size: clamp(4rem, 18vw, 14rem);
-          font-weight: 950;
+          font-weight: 900;
           margin: 0;
           line-height: 1;
           text-transform: uppercase;
           letter-spacing: -0.04em;
-          background: linear-gradient(135deg, #ff66cc 0%, #33ccff 50%, #ffffff 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          filter: drop-shadow(0 0 20px rgba(255, 102, 204, 0.3)) drop-shadow(0 0 40px rgba(51, 204, 255, 0.2));
+          color: var(--text-primary);
           animation: titleFadeIn 1s ease-out;
         }
 
@@ -267,10 +246,8 @@ function ShopContent() {
             padding: 2rem 0; 
             margin-top: 140px;
           }
-          .hero-title { 
-            font-size: 6rem; 
-            background: linear-gradient(135deg, #ff66cc 20%, #33ccff 80%);
-            -webkit-background-clip: text;
+          .hero-title {
+            font-size: 6rem;
           }
           .mobile-hero-gallery { display: flex; }
         }
@@ -525,7 +502,7 @@ function ShopContent() {
           overflow: hidden;
           position: relative;
         }
-        .news-content h2 { font-size: clamp(1.5rem, 4vw, 2.5rem); font-weight: 800; margin-bottom: 1rem; color: var(--accent); font-family: 'Playfair Display', serif; font-style: italic; }
+        .news-content h2 { font-size: clamp(1.5rem, 4vw, 2.5rem); font-weight: 800; margin-bottom: 1rem; color: var(--accent); }
         .news-form { display: flex; gap: 0.75rem; background: var(--bg-card); padding: 6px; border-radius: 50px; border: 1px solid var(--border); width: 100%; max-width: 450px; }
         .news-input { background: none; border: none; padding: 0.75rem 1.5rem; color: var(--text-primary); width: 100%; outline: none; font-size: 0.9rem; }
         .news-btn { background: var(--primary); color: white; border: none; padding: 0.75rem 2rem; border-radius: 50px; font-weight: 800; cursor: pointer; }
@@ -564,10 +541,10 @@ function ShopContent() {
       <div className="mobile-shop-header">
         <div className="mobile-search-row">
           <div className="mobile-search-input-wrapper">
-            <input 
-              type="text" 
-              className="mobile-search-input" 
-              placeholder="Search the market..." 
+            <input
+              type="text"
+              className="mobile-search-input"
+              placeholder="Search products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -603,13 +580,13 @@ function ShopContent() {
       <section className="shop-hero">
         {/* Desktop/Tablet Grid View */}
         <div className="hero-grid-container">
-          <div className="grid-item item-1"><img src="/images/pic1.jpg" alt="" /></div>
-          <div className="grid-item item-2"><img src="/images/pic2.jpg" alt="" /></div>
-          <div className="grid-item item-3"><img src="/images/pic3.png" alt="" /></div>
-          <div className="grid-item item-4"><img src="/images/pic4.png" alt="" /></div>
-          <div className="grid-item item-5"><img src="/images/pic5.png" alt="" /></div>
-          <div className="grid-item item-6"><img src="/images/pic6.png" alt="" /></div>
-          <div className="grid-item item-7"><img src="/images/pic2.jpg" alt="" style={{ filter: 'hue-rotate(45deg)' }} /></div>
+          <div className="grid-item item-1"><img src="/images/hero-medical.jpg.jpg" alt="" /></div>
+          <div className="grid-item item-2"><img src="/images/about/hero.png" alt="" /></div>
+          <div className="grid-item item-3"><img src="/images/categories/cold-flu.png" alt="" /></div>
+          <div className="grid-item item-4"><img src="/images/categories/pain relief.jpeg" alt="" /></div>
+          <div className="grid-item item-5"><img src="/images/categories/vitamins & immunity.jpeg" alt="" /></div>
+          <div className="grid-item item-6"><img src="/images/about/story.jpg" alt="" /></div>
+          <div className="grid-item item-7"><img src="/images/about/hero.png" alt="" /></div>
         </div>
 
         <div className="hero-content">
@@ -618,27 +595,27 @@ function ShopContent() {
 
         {/* Mobile Swipeable Gallery */}
         <div className="mobile-hero-gallery">
-          <div className="mobile-gallery-item"><img src="/images/pic1.jpg" alt="" /></div>
-          <div className="mobile-gallery-item"><img src="/images/pic2.jpg" alt="" /></div>
-          <div className="mobile-gallery-item"><img src="/images/pic3.png" alt="" /></div>
-          <div className="mobile-gallery-item"><img src="/images/pic4.png" alt="" /></div>
-          <div className="mobile-gallery-item"><img src="/images/pic5.png" alt="" /></div>
-          <div className="mobile-gallery-item"><img src="/images/pic6.png" alt="" /></div>
+          <div className="mobile-gallery-item"><img src="/images/hero-medical.jpg.jpg" alt="" /></div>
+          <div className="mobile-gallery-item"><img src="/images/about/hero.png" alt="" /></div>
+          <div className="mobile-gallery-item"><img src="/images/categories/cold-flu.png" alt="" /></div>
+          <div className="mobile-gallery-item"><img src="/images/categories/pain relief.jpeg" alt="" /></div>
+          <div className="mobile-gallery-item"><img src="/images/categories/vitamins & immunity.jpeg" alt="" /></div>
+          <div className="mobile-gallery-item"><img src="/images/about/story.jpg" alt="" /></div>
         </div>
       </section>
 
       {/* Secondary Header with Search */}
       <div className="shop-sub-header">
         <div className="sub-header-left">
-          <h2>Give All You Need</h2>
+          <h2>Shop Our Products</h2>
         </div>
         <div className="search-container">
           <div className="search-area">
             <i>🔍</i>
-            <input 
-              type="text" 
-              className="search-input" 
-              placeholder="Search the stash..." 
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -726,21 +703,6 @@ function ShopContent() {
           </div>
 
           <div className="filter-section">
-            <span className="filter-title">Volume (ml)</span>
-            <div className="tag-list" style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '0.5rem' }}>
-              {[50, 100, 250, 500].map(vol => (
-                <div 
-                  key={vol} 
-                  className={`tag-item ${selectedVolumes.includes(vol) ? 'active' : ''}`}
-                  onClick={() => toggleVolume(vol)}
-                  style={{ padding: '0.4rem 0.8rem', borderRadius: '50px', border: '1px solid var(--border)', fontSize: '0.75rem', minWidth: '60px', justifyContent: 'center' }}
-                >
-                  <span>{vol}ml</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="filter-section">
             <span className="filter-title">Show</span>
             <select 
               className="search-input" 
@@ -755,22 +717,6 @@ function ShopContent() {
               <option value="48">48 per page</option>
               <option value="96">96 per page</option>
             </select>
-          </div>
-
-          <div className="filter-section">
-            <span className="filter-title">Syndicate Division</span>
-            <div className="tag-list" style={{ gap: '0.5rem', display: 'flex', flexWrap: 'wrap', flexDirection: 'row' }}>
-              {Array.from(new Set(products.map(p => p.scent_family).filter(Boolean))).map(strain => (
-                <div 
-                  key={strain} 
-                  className={`tag-item ${selectedStrains.includes(strain) ? 'active' : ''}`}
-                  onClick={() => toggleStrain(strain)}
-                  style={{ padding: '0.4rem 0.8rem', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '0.75rem' }}
-                >
-                  <span>{strain}</span>
-                </div>
-              ))}
-            </div>
           </div>
 
           <div className="filter-section">
@@ -892,9 +838,9 @@ function ShopContent() {
       {/* Newsletter CTA */}
       <section className="newsletter-cta section-radiant">
         <div className="news-content">
-          <h2>Ready to Get<br />Our New Stuff?</h2>
+          <h2>Stay Up to Date<br />On New Arrivals</h2>
           <p style={{ opacity: 0.7, maxWidth: '400px', fontSize: '0.9rem' }}>
-            We listen to your desires and craft the perfect experience. Discrete, premium, and profoundly effective.
+            Get notified about new products and health tips, straight to your inbox.
           </p>
         </div>
         <div className="news-form">

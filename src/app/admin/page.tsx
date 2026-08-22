@@ -248,7 +248,7 @@ export default function AdminDashboard() {
 
       <nav className="top-nav">
         <div className="nav-left">
-          <div className="logo-text">Metrolean <span>Market</span></div>
+          <div className="logo-text">Metrolean-Pharma <span>Admin</span></div>
           <div className="desktop-tabs">
             <button className={`nav-tab ${activeTab === 'Inventory' ? 'active' : ''}`} onClick={() => setActiveTab('Inventory')}>Homepage</button>
             <button className={`nav-tab ${activeTab === 'Analytics' ? 'active' : ''}`} onClick={() => setActiveTab('Analytics')}>Analytics</button>
@@ -284,10 +284,10 @@ export default function AdminDashboard() {
               <div className="table-toolbar">
                 <div className="search-box">
                   <i>🔍</i>
-                  <input 
-                    type="text" 
-                    className="search-input-modern" 
-                    placeholder="Search stash..." 
+                  <input
+                    type="text"
+                    className="search-input-modern"
+                    placeholder="Search products..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -349,7 +349,7 @@ export default function AdminDashboard() {
                 {!loading && filteredProducts.length === 0 && (
                   <div style={{ padding: '6rem 2rem', textAlign: 'center', color: '#94a3b8' }}>
                     <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>🔎</div>
-                    <p style={{ fontWeight: 600, fontSize: '1.1rem' }}>No syndicate records found matching your search.</p>
+                    <p style={{ fontWeight: 600, fontSize: '1.1rem' }}>No products found matching your search.</p>
                   </div>
                 )}
                 {loading && (
@@ -387,7 +387,7 @@ export default function AdminDashboard() {
 
             <div className="table-card">
               <h3 style={{ margin: 0 }}>Category Analysis</h3>
-              <p style={{ color: '#64748b', padding: '4rem 0', textAlign: 'center' }}>Detailed metrics for Metrolean Market are currently being aggregated.</p>
+              <p style={{ color: '#64748b', padding: '4rem 0', textAlign: 'center' }}>Detailed category metrics are currently being aggregated.</p>
             </div>
           </div>
         )}
@@ -404,11 +404,18 @@ export default function AdminDashboard() {
             </div>
             <div className="slide-panel-body">
               <div className="category-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))' }}>
-                {['Relaxatives', 'Strains', 'Syrups', 'Others'].map(cat => (
-                  <div key={cat} onClick={() => handleAddNewClick(cat)} className="category-card">
-                    <div className="category-icon">{cat === 'Relaxatives' ? '🍄' : cat === 'Strains' ? '🌿' : cat === 'Syrups' ? '🧪' : '💊'}</div>
-                    <h4>{cat}</h4>
-                    <p>Manage {cat.toLowerCase()} collection</p>
+                {[
+                  { name: 'Cold & Flu', icon: '🤧' },
+                  { name: 'Pain Relief', icon: '💊' },
+                  { name: 'Allergy & Hayfever', icon: '🌼' },
+                  { name: 'Vitamins & Supplements', icon: '🍎' },
+                  { name: 'First Aid & Wound Care', icon: '🩹' },
+                  { name: 'Digestive Health', icon: '🧪' },
+                ].map(cat => (
+                  <div key={cat.name} onClick={() => handleAddNewClick(cat.name)} className="category-card">
+                    <div className="category-icon">{cat.icon}</div>
+                    <h4>{cat.name}</h4>
+                    <p>Manage {cat.name.toLowerCase()} collection</p>
                   </div>
                 ))}
               </div>

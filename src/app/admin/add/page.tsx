@@ -7,7 +7,7 @@ import { Suspense } from 'react';
 
 function AddProductContent() {
   const searchParams = useSearchParams();
-  const category = searchParams.get('category') || 'Others';
+  const category = searchParams.get('category') || 'Pain Relief';
 
   return (
     <div style={{ paddingTop: '80px', paddingBottom: '100px' }} className="section">

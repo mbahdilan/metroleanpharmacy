@@ -141,14 +141,14 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   if (!product) {
     return (
       <div className="pdp-not-found">
-        <h1>Medication Not Found</h1>
+        <h1>Product Not Found</h1>
         <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>The product you&apos;re looking for doesn&apos;t exist or has been removed.</p>
-        <Link href="/shop" className="btn-primary">Return to Market</Link>
+        <Link href="/shop" className="btn-primary">Return to Shop</Link>
       </div>
     );
   }
 
-  const icon = STRAIN_ICONS[product.scent_family] || '💊';
+  const icon = (product.scent_family && STRAIN_ICONS[product.scent_family]) || '💊';
   const images = product.image_urls && product.image_urls.length > 0 ? product.image_urls : [];
   const totalPrice = (parseFloat(product.price) * quantity).toFixed(2);
   const unitPrice = parseFloat(product.price).toFixed(2);
@@ -257,7 +257,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
           {/* Category Label */}
           <span className="pdp-category-label">
-            {category?.name || product.therapeutic_class || 'Market'}
+            {category?.name || product.therapeutic_class || 'Shop'}
           </span>
 
           {/* Product Title */}
@@ -356,11 +356,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                   <span className="pdp-detail-value">{product.therapeutic_class || '—'}</span>
                 </div>
                 <div className="pdp-detail-item">
-                  <span className="pdp-detail-label">Syndicate Division</span>
-                  <span className="pdp-detail-value">{product.scent_family || '—'}</span>
-                </div>
-                <div className="pdp-detail-item">
-                  <span className="pdp-detail-label">Active Agent</span>
+                  <span className="pdp-detail-label">Active Ingredient</span>
                   <span className="pdp-detail-value">{product.top_notes || '—'}</span>
                 </div>
                 {product.manufacturer && (
@@ -464,7 +460,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                     {p.image_urls?.[0] ? (
                       <img src={p.image_urls[0]} alt={p.name} />
                     ) : (
-                      <span style={{ fontSize: '2.5rem' }}>{STRAIN_ICONS[p.scent_family] || '💊'}</span>
+                      <span style={{ fontSize: '2.5rem' }}>{(p.scent_family && STRAIN_ICONS[p.scent_family]) || '💊'}</span>
                     )}
                   </div>
                   <div className="pdp-related-info">

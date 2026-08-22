@@ -1,8 +1,9 @@
 import { Metadata } from 'next';
+import { BUSINESS_PHONE_DISPLAY } from '@/lib/contact';
 
 export const metadata: Metadata = {
-  title: 'Contact Us - Metrolean Market',
-  description: 'Get in touch with Metrolean Market for premium syndicate supplies, market solutions, and expert advice.',
+  title: 'Contact Us - Metrolean-Pharma Health Tips',
+  description: 'Get in touch with Metrolean-Pharma Health Tips for order support and product questions.',
 };
 
 export default function ContactPage() {
@@ -21,7 +22,7 @@ export default function ContactPage() {
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', color: 'white', padding: '0 1rem' }}>
           <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 4rem)', fontWeight: 900, marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '2px' }}>Contact Us</h1>
           <p style={{ fontSize: '1.2rem', maxWidth: '800px', margin: '0 auto', fontWeight: 500, opacity: 0.9 }}>
-            Dedicated 24/7 assistance for syndicate providers and clients worldwide.
+            Questions about an order or a product? We&apos;re here to help.
           </p>
         </div>
       </section>
@@ -59,7 +60,6 @@ export default function ContactPage() {
               <div className="form-group">
                 <label className="form-label" style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>Subject</label>
                 <select className="form-input" style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-main)' }}>
-                  <option>Syndicate Inquiry</option>
                   <option>Order Support</option>
                   <option>Product Information</option>
                   <option>General Feedback</option>
@@ -75,72 +75,15 @@ export default function ContactPage() {
 
           {/* Contact Info */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            <div style={{ background: 'var(--bg-card)', padding: '2.5rem', borderRadius: '24px', border: '1px solid var(--border)', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
-              <h3 style={{ fontSize: '1.25rem', color: 'var(--accent)', marginBottom: '1.5rem', fontWeight: 800 }}>Global Headquarters</h3>
-              <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
-                <span style={{ fontSize: '1.5rem' }}>📍</span>
-                <p style={{ color: 'var(--text-secondary)' }}>
-                  700 Universe Blvd<br />
-                  Juno Beach, FL 33408<br />
-                  United States
-                </p>
-              </div>
+            <div style={{ background: 'var(--bg-card)', padding: '2.5rem', borderRadius: '24px', border: '1px solid var(--border)', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
+              <h3 style={{ fontSize: '1.25rem', color: 'var(--accent)', marginBottom: '1.5rem', fontWeight: 800 }}>Get in Touch</h3>
               <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
                 <span style={{ fontSize: '1.5rem' }}>📞</span>
-                <p style={{ color: 'var(--text-secondary)' }}>+1 (801) 374-0460</p>
+                <p style={{ color: 'var(--text-secondary)' }}>{BUSINESS_PHONE_DISPLAY} — call, text, or WhatsApp</p>
               </div>
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <span style={{ fontSize: '1.5rem' }}>✉️</span>
                 <p style={{ color: 'var(--text-secondary)' }}>office@metrolean.com</p>
-              </div>
-            </div>
-
-            <div style={{ background: 'var(--bg-card)', padding: '2.5rem', borderRadius: '24px', border: '1px solid var(--border)', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
-              <h3 style={{ fontSize: '1.25rem', color: 'var(--accent)', marginBottom: '1.5rem', fontWeight: 800 }}>European Branches</h3>
-              
-              <div style={{ marginBottom: '2rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                  <img src="https://flagcdn.com/w40/de.png" alt="Germany" style={{ width: '24px', height: 'auto', borderRadius: '2px' }} />
-                  <h4 style={{ fontSize: '1rem', fontWeight: 700 }}>Dortmund, Germany</h4>
-                </div>
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                  <span style={{ fontSize: '1.2rem' }}>📍</span>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                    Westfalendamm 100<br />
-                    44141 Dortmund
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                  <img src="https://flagcdn.com/w40/gb.png" alt="UK" style={{ width: '24px', height: 'auto', borderRadius: '2px' }} />
-                  <h4 style={{ fontSize: '1rem', fontWeight: 700 }}>Manchester, UK</h4>
-                </div>
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                  <span style={{ fontSize: '1.2rem' }}>📍</span>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                    Spinningfields, Quay St<br />
-                    Manchester M3 3JE
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="section-radiant" style={{ padding: '2.5rem', borderRadius: '24px', border: '1px solid var(--border)' }}>
-              <h3 style={{ fontSize: '1.25rem', color: 'var(--primary-dark)', marginBottom: '1rem', fontWeight: 800 }}>Syndicate WhatsApp Desk</h3>
-              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-                For immediate order coordination and syndicate support, please reach out to our regional desks.
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span style={{ fontSize: '1.2rem' }}>🇺🇸</span>
-                  <span style={{ fontWeight: 800, color: 'var(--primary)' }}>+1 (801) 374-0460</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span style={{ fontSize: '1.2rem' }}>🇬🇧</span>
-                  <span style={{ fontWeight: 800, color: 'var(--primary)' }}>+44 7401 663204</span>
-                </div>
               </div>
             </div>
 

@@ -1,32 +1,32 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'About Us - Metrolean Market',
-  description: 'Learn about our journey, mission, and the team behind Metrolean Market.',
+  title: 'About Us - Metrolean-Pharma Health Tips',
+  description: 'Learn about our mission and the team behind Metrolean-Pharma Health Tips.',
 };
 
 export default function AboutPage() {
   const team = [
-    { name: 'Brenard Wilson', role: 'Distributor', description: 'Checks stash interactions and advises clients on safety.', image: '/images/about/bernard.jpg' },
-    { name: 'Aime Madalia', role: 'Specialist', description: 'Expert in premium inventory and local client care.', image: '/images/about/aime.jpg' },
-    { name: 'Zack Gavel', role: 'Syndicate Technician', description: 'Assists with orders and ensures syndicate accuracy.', image: '/images/about/zack.jpg' },
-    { name: 'Cleff Moore', role: 'Stock Manager', description: 'Maintains stash availability and manages inventory logistics.', image: '/images/about/cleff.jpg' },
+    { name: 'Brenard Wilson', role: 'Pharmacist', description: 'Reviews product interactions and advises customers on safe use.', image: '/images/about/bernard.jpg' },
+    { name: 'Aime Madalia', role: 'Customer Care Specialist', description: 'Expert in product inventory and customer support.', image: '/images/about/aime.jpg' },
+    { name: 'Zack Gavel', role: 'Pharmacy Technician', description: 'Assists with orders and ensures accuracy across every shipment.', image: '/images/about/zack.jpg' },
+    { name: 'Cleff Moore', role: 'Stock Manager', description: 'Maintains product availability and manages inventory logistics.', image: '/images/about/cleff.jpg' },
   ];
 
   const values = [
     { title: 'Timely Delivery', description: 'We ensure our products reach you exactly when you need them.' },
-    { title: 'Customer Satisfaction', description: 'Your relief and happiness are our biggest driving force.' },
-    { title: 'Serving Humanity', description: 'Giving back to the world in our own meaningful way.' },
-    { title: 'Innovation', description: 'Embracing new solutions for better syndicate access.' },
+    { title: 'Customer Satisfaction', description: 'Your health and happiness are our biggest driving force.' },
+    { title: 'Evidence-Based', description: 'Our guides are written to be clear, accurate, and easy to act on.' },
+    { title: 'Accessibility', description: 'Making everyday health information and essentials easier to reach.' },
   ];
 
   const timeline = [
-    { year: '2004', event: 'Founded Metrolean Market in a small Texas town to provide accessible stash.' },
-    { year: '2012', event: 'Officially approved to fulfill premium syndicate inventory.' },
-    { year: '2015', event: 'Expanded internationally, shipping the first 100 boxes of stash from America to Europe.' },
-    { year: '2024', event: 'Successfully established our first European physical branch in Dortmund, Germany.' },
-    { year: '2025', event: 'Expanded our European presence with a new major distribution hub in Manchester, UK.' },
-    { year: 'Future', event: 'Continuing our global mission to bring accessible syndicate inventory to every corner of the world.' },
+    { year: '2004', event: 'Founded in a small Texas town to make everyday health essentials more accessible.' },
+    { year: '2012', event: 'Grew into a trusted local pharmacy resource for the community.' },
+    { year: '2015', event: 'Launched our online shop to reach customers beyond our local area.' },
+    { year: '2024', event: 'Began publishing evidence-based medication guides to help customers make informed decisions.' },
+    { year: '2025', event: 'Expanded our product catalog and health-guide library.' },
+    { year: 'Future', event: 'Continuing our mission to make health information and everyday essentials more accessible for everyone.' },
   ];
 
   return (
@@ -52,10 +52,10 @@ export default function AboutPage() {
             <span style={{ color: 'var(--accent)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.9rem' }}>Who We Are</span>
             <h2 style={{ fontSize: '2.5rem', color: 'var(--accent)', margin: '1rem 0' }}>Our Journey Started with a Purpose</h2>
             <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: '1.5rem' }}>
-              Founded in 2004 in a small Texas town, Metrolean Market began with a simple observation: people shouldn't have to travel far just to get basic relief for a headache or essential stash.
+              Founded in 2004 in a small Texas town, Metrolean-Pharma began with a simple observation: people shouldn&apos;t have to travel far, or wade through confusing information, to get everyday relief for a headache, cold, or allergy flare-up.
             </p>
             <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.8 }}>
-              Our early years were a challenge, but our commitment to client care led to full syndicate approval by 2012. Today, we specialize in bulk and retail shipments, bridging the gap between American syndicate supplies and clients across Europe and beyond.
+              Today we combine a trusted online pharmacy shop with plain-English, evidence-based health guides, so you can shop for what you need and understand what you&apos;re taking.
             </p>
           </div>
         </div>
@@ -67,13 +67,13 @@ export default function AboutPage() {
           <div style={{ background: 'var(--bg-card)', padding: '3rem', borderRadius: '24px', boxShadow: 'var(--shadow-md)', borderLeft: '8px solid var(--accent)' }}>
             <h3 style={{ fontSize: '1.8rem', color: 'var(--accent)', marginBottom: '1.5rem' }}>Our Mission</h3>
             <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-              Seeing that our clients get their stash on time and in the right quantity, providing comfort and relief through accessible syndicate solutions.
+              Making sure our customers get accurate health information and their orders on time, so everyday relief is never out of reach.
             </p>
           </div>
           <div style={{ background: 'var(--bg-card)', padding: '3rem', borderRadius: '24px', boxShadow: 'var(--shadow-md)', borderLeft: '8px solid var(--accent)' }}>
             <h3 style={{ fontSize: '1.8rem', color: 'var(--accent)', marginBottom: '1.5rem' }}>Our Vision</h3>
             <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-              To lead global syndicate distribution with a focus on humanity. With our new branches in <strong>Dortmund, Germany</strong> and <strong>Manchester, UK</strong>, we are now closer to our European clients than ever.
+              To be the health resource customers trust first — combining honest, evidence-based guidance with a reliable everyday pharmacy shop.
             </p>
           </div>
         </div>

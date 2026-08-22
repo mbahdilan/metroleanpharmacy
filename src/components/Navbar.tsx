@@ -46,13 +46,13 @@ export default function Navbar() {
       <nav className="navbar" style={{ position: 'relative', top: 'auto', left: 'auto', right: 'auto', borderBottom: 'none' }}>
         <div className="navbar-inner">
           <Link href="/" className="navbar-brand" style={{ border: 'none', outline: 'none' }}>
-            <img src="/images/logo_for_homepage-removebg-preview.png" alt="The Metrolean Logo" className="navbar-logo" style={{ maxHeight: '60px', width: 'auto', border: 'none', outline: 'none' }} />
+            <img src="/images/logo-mck.png.jpeg" alt="Metrolean-Pharma Health Tips" className="navbar-logo" style={{ maxHeight: '60px', width: 'auto', border: 'none', outline: 'none' }} />
           </Link>
 
           <div className="navbar-links">
             <Link href="/">Home</Link>
-            <Link href="/shop">Shop All</Link>
-            <Link href="/guides">Guides & Strains</Link>
+            <Link href="/shop">Shop</Link>
+            <Link href="/blog">Health Guides</Link>
             <Link href="/about">About Us</Link>
           </div>
 
@@ -78,7 +78,7 @@ export default function Navbar() {
           <div className="mobile-menu">
             <Link href="/" onClick={() => setMobileOpen(false)}>Home</Link>
             <Link href="/shop" onClick={() => setMobileOpen(false)}>Shop</Link>
-            <Link href="/guides" onClick={() => setMobileOpen(false)}>Guides & Strains</Link>
+            <Link href="/blog" onClick={() => setMobileOpen(false)}>Health Guides</Link>
             <Link href="/about" onClick={() => setMobileOpen(false)}>About Us</Link>
           </div>
         )}
