@@ -5,8 +5,16 @@ import AnnouncementPopup from '@/components/AnnouncementPopup';
 import './globals.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://metrolean.com'),
   title: 'Metrolean-Pharma Health Tips',
   description: 'Evidence-based medication guides plus a trusted shop for everyday OTC pharmacy essentials.',
+  openGraph: {
+    siteName: 'Metrolean-Pharma Health Tips',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

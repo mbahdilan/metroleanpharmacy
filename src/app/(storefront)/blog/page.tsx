@@ -5,6 +5,13 @@ import { ARTICLES } from '@/lib/articles';
 export const metadata: Metadata = {
   title: 'Health Guides - Metrolean-Pharma Health Tips',
   description: 'Evidence-based, plain-English guides on medications, OTC vs. prescription, and everyday health questions.',
+  alternates: { canonical: '/blog' },
+  openGraph: {
+    title: 'Health Guides - Metrolean-Pharma Health Tips',
+    description: 'Evidence-based, plain-English guides on medications, OTC vs. prescription, and everyday health questions.',
+    url: '/blog',
+    type: 'website',
+  },
 };
 
 export default function BlogPage() {

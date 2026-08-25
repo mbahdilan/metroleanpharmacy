@@ -5,6 +5,13 @@ import { ARTICLES } from '@/lib/articles';
 export const metadata: Metadata = {
   title: 'Browse by Topic - Metrolean-Pharma Health Tips',
   description: 'Browse our health guides by topic — cold & flu, pain relief, allergies, vitamins, and more.',
+  alternates: { canonical: '/guides' },
+  openGraph: {
+    title: 'Browse by Topic - Metrolean-Pharma Health Tips',
+    description: 'Browse our health guides by topic — cold & flu, pain relief, allergies, vitamins, and more.',
+    url: '/guides',
+    type: 'website',
+  },
 };
 
 export default function GuidesPage() {

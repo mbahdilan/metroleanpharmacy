@@ -7,6 +7,11 @@ export type Article = {
   date: string;
 };
 
+// Category used for controlled-substance safety content. Articles in this
+// category skip the "Shop Related Products" CTA (see blog/[slug]/page.tsx) —
+// this content is informational, not a purchase funnel.
+export const SAFETY_CATEGORY = 'Medication Safety';
+
 export const ARTICLES: Article[] = [
   {
     slug: 'cold-vs-flu-vs-allergies',
@@ -110,6 +115,71 @@ export const ARTICLES: Article[] = [
       'GLP-1 receptor agonists work differently: they mimic a gut hormone that stimulates the body’s own insulin release (only when blood sugar is elevated), slow digestion, and reduce appetite — which is why this drug class is also associated with weight loss.',
       'Because GLP-1s rely on the body still being able to produce some insulin, they’re primarily used in type 2 diabetes, not type 1, where the body produces little to no insulin of its own.',
       'The two are sometimes used together in type 2 diabetes when one medication alone isn’t enough to manage blood sugar. Which approach — or combination — is right depends on individual factors like diabetes type, other health conditions, and treatment goals, which is a conversation for your prescribing doctor, not something to decide from an article.',
+    ],
+  },
+  {
+    slug: 'why-codeine-is-prescription-only',
+    title: 'Why Codeine and Other Opioid Cough Medicines Are Prescription-Only',
+    category: SAFETY_CATEGORY,
+    date: '2026-07-27',
+    excerpt: 'Codeine isn’t a regular cough suppressant — it’s an opioid. Here’s what that means for how it’s regulated and the risks worth understanding.',
+    body: [
+      'Codeine is an opioid, chemically related to morphine, and your liver converts a portion of it into morphine as it’s metabolized. That’s part of why it works as a cough suppressant and mild pain reliever, and also why it’s regulated far more tightly than an over-the-counter option like dextromethorphan.',
+      '## Why every formulation requires a prescription\nIn the United States, codeine is a Schedule II–V controlled substance depending on the specific formulation and what it’s combined with. There is no legitimate over-the-counter codeine product sold through US pharmacies, regardless of what a website or search result might claim.\n- Even taken exactly as prescribed, codeine can cause physical dependence within days to weeks of regular use.\n- Combined with alcohol, benzodiazepines, or other opioids, it can slow or stop breathing — the mechanism behind most opioid overdose deaths.\n- People metabolize codeine at different rates. A small percentage are “ultra-rapid metabolizers” who convert it to morphine unusually fast, which has caused serious harm at doses that are safe for most people — part of why codeine is specifically avoided in children after surgery.',
+      '## Signs it’s time to talk to a doctor or pharmacist\nNeeding a cough suppressant to work for longer than a week, needing more than the prescribed dose for the same effect, or feeling anxious about running out are all worth raising with a healthcare provider rather than managing alone. Dependence can develop even in people who never intended to misuse the medication — it isn’t a reflection of willpower.',
+      'If you or someone you know is using codeine, alone or as part of a cough syrup, outside of how it was prescribed, or is having trouble stopping, the SAMHSA National Helpline (1-800-662-4357) is free, confidential, and available 24/7 for referrals to local treatment.',
+    ],
+  },
+  {
+    slug: 'xanax-benzodiazepines-what-to-know',
+    title: 'Xanax and Other Benzodiazepines: What They Treat, and Why You Never Stop Them Abruptly',
+    category: SAFETY_CATEGORY,
+    date: '2026-08-03',
+    excerpt: 'Xanax and other benzodiazepines are effective for anxiety and panic disorders, but stopping them suddenly can be more dangerous than the condition they treat.',
+    body: [
+      'Xanax (alprazolam) belongs to a class of medications called benzodiazepines, which also includes drugs like Ativan (lorazepam), Klonopin (clonazepam), and Valium (diazepam). They work by enhancing the effect of GABA, a calming neurotransmitter in the brain, which is why they’re effective for anxiety disorders, panic disorder, and short-term insomnia.',
+      '## Why they’re Schedule IV controlled substances\nBenzodiazepines carry a real risk of physical dependence, tolerance, and misuse potential — which is why they’re prescription-only and classified as controlled substances in the US. They’re generally prescribed for the shortest effective duration rather than as an indefinite daily medication.',
+      '## The most important safety fact: never stop suddenly\nStopping a benzodiazepine abruptly after regular use — even just a few weeks — can trigger a withdrawal syndrome that includes rebound anxiety, tremor, and in more severe cases, seizures. This is one of the reasons benzodiazepine withdrawal can be more medically dangerous than withdrawal from some other drug classes.\n- Never stop or reduce your dose without medical guidance, even if you feel like you no longer need it.\n- A prescriber will typically taper the dose gradually over weeks, not stop it in one step.\n- Mixing benzodiazepines with opioids, alcohol, or other sedatives significantly increases the risk of dangerous breathing suppression — the FDA carries a boxed warning specifically about combining benzodiazepines with opioids.',
+      'If you’re taking a benzodiazepine and want to stop, or you’re worried about dependence, talk to the prescriber rather than stopping on your own. If you’re in a mental health crisis, the 988 Suicide & Crisis Lifeline (call or text 988) is available 24/7, and the SAMHSA National Helpline (1-800-662-4357) can connect you to local treatment for dependence.',
+    ],
+  },
+  {
+    slug: 'truth-about-lean-promethazine-codeine',
+    title: 'The Truth About "Lean": Why Mixing Promethazine and Codeine Is Life-Threatening',
+    category: SAFETY_CATEGORY,
+    date: '2026-08-10',
+    excerpt: '“Lean” or “purple drank” — promethazine-codeine syrup mixed with soda — has been popularized in music culture, but the combination carries serious, sometimes fatal risk.',
+    body: [
+      '“Lean” (also called “purple drank” or “sizzurp”) refers to promethazine-codeine cough syrup mixed with a soft drink and sometimes hard candy, taken in amounts and a context far outside how the medication is prescribed. It’s been referenced and glamorized in music and popular culture for years, which has made it seem more casual and less dangerous than it actually is.',
+      '## Why the combination is especially dangerous\nPromethazine and codeine are both central nervous system depressants on their own, and combining them compounds the risk rather than simply adding to it.\n- Codeine, an opioid, can suppress breathing at high doses — the leading cause of death in opioid overdose.\n- Promethazine adds sedation on top of that, and in higher amounts carries its own risk of dangerous heart rhythm changes (QT prolongation) and, rarely, severe tissue injury if misused by injection.\n- Because “lean” is typically consumed in volumes and concentrations far beyond a prescribed dose, and often alongside alcohol, the combined depressant effect on breathing and heart rhythm is what makes it capable of causing death, including in otherwise healthy young people.',
+      'This isn’t a matter of an occasional recreational choice being roughly as risky as alcohol. Prescription promethazine-codeine syrup is dosed in single-digit milliliters for genuine medical need; “lean” preparations commonly involve multiples of that amount, repeated over hours, which is a fundamentally different risk profile than what the prescribing information accounts for.',
+      'If you or someone you know is using promethazine-codeine syrup outside of a prescription, this is worth treating as seriously as any other opioid use — the SAMHSA National Helpline (1-800-662-4357) is free, confidential, and available 24/7. In a suspected overdose (slow or stopped breathing, unresponsiveness, blue lips), call 911 immediately — naloxone can reverse the opioid component of an overdose, but emergency care is still necessary.',
+    ],
+  },
+  {
+    slug: 'dangers-of-mixing-opioids-benzodiazepines-alcohol',
+    title: 'Why You Should Never Mix Opioids, Benzodiazepines, and Alcohol',
+    category: SAFETY_CATEGORY,
+    date: '2026-08-17',
+    excerpt: 'Opioids, benzodiazepines, and alcohol all slow breathing through overlapping mechanisms — combining any two of them multiplies the risk rather than adding to it.',
+    body: [
+      'Opioids (like codeine, oxycodone, or morphine), benzodiazepines (like Xanax, Ativan, or Valium), and alcohol are all central nervous system depressants. Each one, on its own, can slow breathing at high enough doses. Combined, the effect isn’t simply additive — it’s synergistic, meaning the combined risk is greater than the sum of the individual risks.',
+      '## Why the FDA requires a boxed warning\nIn 2016, the FDA added its strongest warning — a boxed warning — to both opioid and benzodiazepine labeling specifically about combining the two classes, after data showed a sharp rise in overdose deaths involving both drug types together. Alcohol compounds the same risk further.',
+      '## What this looks like in practice\n- A dose of an opioid that’s safe on its own can become dangerous when a benzodiazepine or alcohol is also on board, because all three suppress the same breathing reflex.\n- This applies even when each medication is individually taken as prescribed — it’s specifically the combination that matters, not just misuse of either one alone.\n- Older adults and people with sleep apnea or other respiratory conditions are at even higher risk from these combinations.',
+      'If you’re prescribed both an opioid and a benzodiazepine, that’s sometimes medically necessary and should be closely supervised by your prescriber — it isn’t automatically unsafe, but it does require caution, the lowest effective doses, and avoiding alcohol entirely. Always tell every prescriber and your pharmacist about every medication you’re taking, including as-needed prescriptions, so this interaction can be flagged before it becomes a problem.',
+    ],
+  },
+  {
+    slug: 'safe-storage-and-disposal-of-medications',
+    title: 'Safe Storage and Disposal of Prescription Medications at Home',
+    category: SAFETY_CATEGORY,
+    date: '2026-08-24',
+    excerpt: 'Where and how you store medications at home meaningfully affects both accidental poisoning risk and the chance they end up used by someone they weren’t prescribed for.',
+    body: [
+      'Most people store medication in a bathroom cabinet or kitchen drawer without thinking much about it, but where and how prescriptions are stored has a measurable effect on two separate risks: accidental ingestion by children, and use by a family member or visitor the medication wasn’t prescribed for — one of the most common ways people are first exposed to controlled substances like opioids and benzodiazepines.',
+      '## Storage\n- Keep controlled medications (opioids, benzodiazepines, stimulants) in a locked box or cabinet, not just a high shelf — child-resistant caps aren’t the same as child-proof, and older kids and teens can and do find and recognize medications left in plain sight.\n- Don’t store medication in its original bottle inside a shared medicine cabinet if household members other than the prescribed patient have access — a locked container is worth the inconvenience for anything with misuse potential.\n- Keep track of roughly how many pills or how much liquid you have left, the same way you’d notice if cash went missing — it makes it far easier to notice if something is off.',
+      '## Disposal\nExpired or unneeded medication shouldn’t sit in a cabinet indefinitely, and most medications shouldn’t simply go in household trash or down the drain. The DEA runs National Prescription Drug Take Back Day events, and many pharmacies host permanent drop boxes year-round — search “drug take back near me” or ask your pharmacist directly. For a short list of specific medications, the FDA recommends flushing if no take-back option is immediately available, specifically because the poisoning risk from a child or pet finding them outweighs the environmental concern — check the FDA’s “flush list” if you’re unsure which category a medication falls into.',
+      'This applies even to medications you don’t think of as risky. A half-empty bottle of a prescribed cough syrup or anti-anxiety medication sitting in a cabinet for months is a common, preventable starting point for both accidental poisoning and misuse — a few minutes of secure storage or proper disposal meaningfully reduces both.',
     ],
   },
 ];
