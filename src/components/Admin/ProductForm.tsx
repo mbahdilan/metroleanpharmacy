@@ -4,47 +4,34 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase, Product, Category } from '@/lib/supabase';
 
-export default function ProductForm({ 
-  initialData, 
-  category,
-  onSuccess,
-  onCancel,
-  onDelete
-}: { 
-  initialData?: Product, 
-  category?: string,
-  onSuccess?: () => void,
-  onCancel?: () => void,
-  onDelete?: () => void
-}) {
+const slugify = (s: string) =>
+  s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+export default function ProductForm({ initialData }: { initialData?: Product }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
     slug: initialData?.slug || '',
-    description: initialData?.description || '',
+    category_id: initialData?.category_id || '',
+    dosage_form: initialData?.dosage_form || 'Solid',
     short_description: initialData?.short_description || '',
+    description: initialData?.description || '',
+    top_notes: initialData?.top_notes || '',
+    manufacturer: initialData?.manufacturer || '',
     price: initialData?.price || '',
     compare_at_price: initialData?.compare_at_price || '',
-    category_id: initialData?.category_id || '',
-    scent_family: initialData?.scent_family || null,
-    volume_ml: initialData?.volume_ml || 0,
-    top_notes: initialData?.top_notes || '',
-    middle_notes: initialData?.middle_notes || '',
-    base_notes: initialData?.base_notes || '',
-    units_in_stock: initialData?.units_in_stock || 0,
+    units_in_stock: initialData?.units_in_stock ?? 0,
+    min_quantity: initialData?.min_quantity ?? 1,
+    volume_ml: initialData?.volume_ml ?? 0,
+    expiry_date: initialData?.expiry_date || '',
+    requires_prescription: initialData?.requires_prescription || false,
     is_featured: initialData?.is_featured || false,
     is_active: initialData?.is_active ?? true,
     image_urls: initialData?.image_urls || [],
-    image_url: initialData?.image_url || initialData?.image_urls?.[0] || '',
-    dosage_form: initialData?.dosage_form || 'Solid',
-    therapeutic_class: initialData?.therapeutic_class || (category || ''),
-    expiry_date: initialData?.expiry_date || '',
-    requires_prescription: initialData?.requires_prescription || false,
-    manufacturer: initialData?.manufacturer || '',
-    min_quantity: initialData?.min_quantity || 1,
   });
 
   const [deletedImages, setDeletedImages] = useState<string[]>([]);
@@ -55,9 +42,7 @@ export default function ProductForm({
       const { data } = await supabase.from('categories').select('*').order('name');
       setCategories(data || []);
       if (data && data.length > 0 && !formData.category_id) {
-        // Find the matching category ID if a category string is provided, otherwise fallback to the first element
-        const matchedCategory = data.find((c: any) => c.name === category);
-        setFormData(prev => ({ ...prev, category_id: matchedCategory ? matchedCategory.id : data[0].id }));
+        setFormData(prev => ({ ...prev, category_id: prev.category_id || data[0].id }));
       }
     }
     fetchCategories();
@@ -67,8 +52,14 @@ export default function ProductForm({
     const { name, value, type } = e.target as any;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
     }));
+  };
+
+  const handleNameBlur = () => {
+    if (!formData.slug && formData.name) {
+      setFormData(prev => ({ ...prev, slug: slugify(prev.name) }));
+    }
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,7 +67,7 @@ export default function ProductForm({
     if (!files || files.length === 0) return;
 
     if (formData.image_urls.length + files.length > 4) {
-      alert('Maximum 4 images allowed per product record.');
+      alert('Maximum 4 images allowed per product.');
       return;
     }
 
@@ -86,21 +77,15 @@ export default function ProductForm({
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       try {
-        // API compression
         const compressionFormData = new FormData();
         compressionFormData.append('file', file);
 
-        const compressRes = await fetch('/api/compress', {
-          method: 'POST',
-          body: compressionFormData,
-        });
-
+        const compressRes = await fetch('/api/compress', { method: 'POST', body: compressionFormData });
         if (!compressRes.ok) throw new Error('Compression service error');
 
         const compressedBlob = await compressRes.blob();
         const compressedFile = new File([compressedBlob], file.name, { type: file.type });
 
-        // Upload to Storage
         const fileExt = file.name.split('.').pop();
         const fileName = `${Math.random()}.${fileExt}`;
         const filePath = `medications/${fileName}`;
@@ -108,13 +93,9 @@ export default function ProductForm({
         const { error: uploadError } = await supabase.storage
           .from('product-images')
           .upload(filePath, compressedFile);
-
         if (uploadError) throw uploadError;
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('product-images')
-          .getPublicUrl(filePath);
-
+        const { data: { publicUrl } } = supabase.storage.from('product-images').getPublicUrl(filePath);
         newImageUrls.push(publicUrl);
       } catch (err: any) {
         console.error('Upload error:', err);
@@ -122,427 +103,263 @@ export default function ProductForm({
       }
     }
 
-    setFormData(prev => ({ 
-      ...prev, 
-      image_urls: newImageUrls,
-      image_url: prev.image_url || newImageUrls[0] || '' 
-    }));
+    setFormData(prev => ({ ...prev, image_urls: newImageUrls }));
     setUploading(false);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const removeImage = (index: number) => {
     const urlToRemove = formData.image_urls[index];
-    
-    // Extract storage path from the public URL if it's a Supabase storage URL
-    if (urlToRemove && urlToRemove.includes('/storage/v1/object/public/product-images/')) {
+    if (urlToRemove?.includes('/storage/v1/object/public/product-images/')) {
       const path = urlToRemove.split('/storage/v1/object/public/product-images/')[1];
-      if (path) {
-        setDeletedImages(prev => [...prev, path]);
-      }
+      if (path) setDeletedImages(prev => [...prev, path]);
     }
-
-    setFormData(prev => ({
-      ...prev,
-      image_urls: prev.image_urls.filter((_, i) => i !== index)
-    }));
+    setFormData(prev => ({ ...prev, image_urls: prev.image_urls.filter((_, i) => i !== index) }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     const payload = {
       ...formData,
       price: parseFloat(formData.price as string),
       compare_at_price: formData.compare_at_price ? parseFloat(formData.compare_at_price as string) : null,
       volume_ml: parseInt(formData.volume_ml as any) || 0,
       units_in_stock: parseInt(formData.units_in_stock as any) || 0,
-      // Convert empty strings to null for UUID and optional fields
+      min_quantity: parseInt(formData.min_quantity as any) || 1,
       category_id: formData.category_id || null,
       expiry_date: formData.expiry_date || null,
       manufacturer: formData.manufacturer || null,
-      therapeutic_class: formData.therapeutic_class || null,
-      scent_family: formData.scent_family || null,
       short_description: formData.short_description || null,
       description: formData.description || null,
       top_notes: formData.top_notes || null,
-      middle_notes: formData.middle_notes || null,
-      base_notes: formData.base_notes || null,
-      image_url: formData.image_url || formData.image_urls[0] || null,
+      image_url: formData.image_urls[0] || null,
       image_urls: formData.image_urls,
-      min_quantity: parseInt(formData.min_quantity as any) || 1,
-      is_active: formData.is_active,
     };
 
-    console.log('Final Payload for Supabase:', payload);
-
-    let error;
-    
-    // Auto-create/upsert the admin profile for the current user to satisfy RLS
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.user) {
-      await supabase.from('profiles').upsert({
-        id: session.user.id,
-        email: session.user.email,
-        role: 'admin'
-      }, { onConflict: 'id' });
+      await supabase.from('profiles').upsert(
+        { id: session.user.id, email: session.user.email, role: 'admin' },
+        { onConflict: 'id' }
+      );
     }
 
-    if (initialData) {
-      const { error: err } = await supabase
-        .from('products')
-        .update(payload)
-        .eq('id', initialData.id);
-      error = err;
-    } else {
-      const { error: err } = await supabase
-        .from('products')
-        .insert([payload]);
-      error = err;
-    }
+    const { error } = initialData
+      ? await supabase.from('products').update(payload).eq('id', initialData.id)
+      : await supabase.from('products').insert([payload]);
 
     setLoading(false);
     if (error) {
       alert('Product save error: ' + error.message);
-    } else {
-      // If product saved successfully, clean up deleted images from storage
-      if (deletedImages.length > 0) {
-        try {
-          await supabase.storage
-            .from('product-images')
-            .remove(deletedImages);
-          setDeletedImages([]); // Clear the list after successful deletion
-        } catch (storageErr) {
-          console.error('Error cleaning up storage:', storageErr);
-          // We don't necessarily want to block the user if storage cleanup fails, 
-          // as the DB is already updated.
-        }
-      }
+      return;
+    }
 
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        router.push('/admin');
-        router.refresh();
-      }
+    if (deletedImages.length > 0) {
+      await supabase.storage.from('product-images').remove(deletedImages).catch(() => {});
+    }
+
+    router.push('/admin');
+    router.refresh();
+  };
+
+  const handleDelete = async () => {
+    if (!initialData) return;
+    if (!confirm('Permanently delete this product? This cannot be undone.')) return;
+
+    setDeleting(true);
+    const { data: { session } } = await supabase.auth.getSession();
+    const res = await fetch(`/api/products/${initialData.id}`, {
+      method: 'DELETE',
+      headers: { Authorization: session ? `Bearer ${session.access_token}` : '' },
+    });
+
+    if (res.ok) {
+      router.push('/admin');
+      router.refresh();
+    } else {
+      const data = await res.json();
+      alert('Error removing product: ' + (data.error || 'Unknown error'));
+      setDeleting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="admin-form-container" style={{ maxWidth: '1000px', margin: '0 auto' }}>
+    <form onSubmit={handleSubmit} className="product-form" style={{ maxWidth: '900px', margin: '0 auto' }}>
       <style>{`
-        .admin-form-container {
-          background: white;
-          padding: 3rem;
-          border-radius: 40px;
-          border: 1px solid #eee;
-          box-shadow: 0 20px 50px rgba(0,0,0,0.05);
-        }
-        .form-header {
-          margin-bottom: 3rem;
-          text-align: left;
-          border-bottom: 1px solid #f1f5f9;
-          padding-bottom: 2rem;
-        }
-        .form-header h2 {
-          font-size: 1.75rem;
-          font-weight: 700;
-          color: #0f172a;
-          margin-bottom: 0.5rem;
-        }
-        .form-header p { font-size: 0.95rem; color: #64748b; margin: 0; }
-        
-        .form-content-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1.5rem;
-        }
-        .full-width { grid-column: span 2; }
-        
-        .form-box {
-          border: 1px solid #e2e8f0;
-          border-radius: 16px;
-          padding: 1rem 1.25rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.25rem;
-          transition: all 0.2s;
-          background: white;
-        }
-        .form-box:focus-within {
-          border-color: #2563eb;
-          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-        .form-label {
-          font-size: 0.8rem;
-          font-weight: 700;
-          color: #475569;
-          margin: 0;
-        }
-        .form-input-clean {
-          border: none;
-          background: transparent;
-          font-size: 1rem;
-          font-weight: 500;
-          color: #1e293b;
-          width: 100%;
-          outline: none;
-          padding: 0;
-        }
-        .form-input-clean::placeholder { color: #cbd5e1; }
-        
-        .upload-section {
-          margin: 2rem 0;
-          background: #f8fafc;
-          border: 2px dashed #e2e8f0;
-          border-radius: 20px;
-          padding: 3rem;
-          text-align: center;
-          transition: all 0.2s;
-        }
-        .upload-section:hover { border-color: #2563eb; background: #f1f5f9; }
-        .upload-content { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-        .upload-icon { font-size: 2.5rem; color: #cbd5e1; }
-        .upload-text h4 { font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0; }
-        .upload-text p { font-size: 0.85rem; color: #64748b; margin: 5px 0 0; }
-        
-        .image-grid-premium {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 1.5rem;
-          margin-top: 2rem;
-        }
-        .img-preview-premium {
-          position: relative; aspect-ratio: 4/3; border-radius: 16px; overflow: hidden;
-          border: 1px solid #eee; box-shadow: var(--shadow-sm);
-        }
-        
-        .remove-img-btn {
-          position: absolute;
-          top: 10px;
-          right: 10px;
-          width: 28px;
-          height: 28px;
-          background: rgba(239, 68, 68, 0.9);
-          color: white;
-          border-radius: 50%;
-          border: none;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          font-size: 1.2rem;
-          font-weight: 800;
-          line-height: 1;
-          transition: all 0.2s;
-          z-index: 10;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-        .remove-img-btn:hover {
-          background: #ef4444;
-          transform: scale(1.1);
-        }
-        
-        .price-summary-box {
-          display: flex;
-          justify-content: flex-end;
-          align-items: center;
-          gap: 2rem;
-          padding-top: 3rem;
-          margin-top: 2rem;
-          border-top: 1px solid #f1f5f9;
-        }
-        
-        .footer-actions {
-          display: flex;
-          justify-content: flex-end;
-          gap: 1rem;
-          margin-top: 2rem;
-        }
-        .btn-reset {
-          background: white; border: 1px solid #e2e8f0; color: #475569;
-          padding: 0.75rem 1.5rem; border-radius: 12px; font-weight: 700; cursor: pointer;
-        }
-        .btn-submit-premium {
-          background: #0f172a; color: white; border: none;
-          padding: 0.75rem 2.5rem; border-radius: 12px; font-weight: 700; cursor: pointer;
-          transition: all 0.2s;
-        }
-        .btn-submit-premium:hover { background: #1e293b; transform: translateY(-1px); }
+        .product-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 2rem; }
+        .product-form-grid .form-group.full-width { grid-column: span 2; }
+        .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border: 1px solid var(--border); border-radius: 10px; }
+        .toggle-row .form-label { margin: 0; }
+        .toggle-row p { margin: 0.2rem 0 0; font-size: 0.8rem; color: var(--text-muted); text-transform: none; font-weight: 500; }
+        .toggles-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
 
-        @media (max-width: 768px) {
-          .admin-form-container { padding: 1.5rem; border-radius: 30px; }
-          .form-content-grid { grid-template-columns: 1fr; }
-          .full-width { grid-column: auto; }
-          .upload-section { padding: 1.5rem; }
-          .image-grid-premium { grid-template-columns: repeat(2, 1fr); }
-          .footer-actions { flex-direction: column-reverse; }
-          .btn-submit-premium { padding: 1.25rem; width: 100%; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .switch .slider { position: absolute; cursor: pointer; inset: 0; background: var(--border); transition: .2s; border-radius: 34px; }
+        .switch .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background: white; transition: .2s; border-radius: 50%; }
+        .switch input:checked + .slider { background: var(--primary); }
+        .switch input:checked + .slider:before { transform: translateX(20px); }
+
+        .upload-dropzone { margin: 0 0 2rem; background: var(--bg-main); border: 2px dashed var(--border); border-radius: 16px; padding: 2.5rem; text-align: center; transition: all 0.2s; }
+        .upload-dropzone:hover { border-color: var(--primary); }
+        .upload-dropzone p { color: var(--text-muted); font-size: 0.85rem; margin: 0.25rem 0 1rem; }
+
+        .image-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .image-tile { position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+        .image-tile img { width: 100%; height: 100%; object-fit: cover; }
+        .image-tile button { position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border-radius: 50%; background: rgba(15,23,42,0.75); color: white; font-size: 1rem; line-height: 1; }
+
+        .form-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+
+        @media (max-width: 700px) {
+          .product-form-grid { grid-template-columns: 1fr; }
+          .product-form-grid .form-group.full-width { grid-column: auto; }
+          .image-grid { grid-template-columns: repeat(2, 1fr); }
+          .form-footer { flex-direction: column-reverse; gap: 1rem; align-items: stretch; }
         }
       `}</style>
 
-      <div className="form-header">
-        <h2>{initialData ? 'Update Record' : 'Register Product'}</h2>
-        <p>Complete the product profile below.</p>
-      </div>
-
-      <div className="form-content-grid">
-        <div className="form-box full-width">
+      <div className="product-form-grid">
+        <div className="form-group full-width">
           <label className="form-label">Product Name</label>
-          <input name="name" value={formData.name} onChange={handleChange} className="form-input-clean" placeholder="e.g., Amoxicillin 500mg" />
+          <input name="name" value={formData.name} onChange={handleChange} onBlur={handleNameBlur} className="form-input" placeholder="e.g., Amoxicillin 500mg" required />
         </div>
 
-        <div className="form-box">
+        <div className="form-group">
           <label className="form-label">URL Slug</label>
-          <input name="slug" value={formData.slug} onChange={handleChange} className="form-input-clean" placeholder="amoxicillin-500mg" />
+          <input name="slug" value={formData.slug} onChange={handleChange} className="form-input" placeholder="amoxicillin-500mg" required />
         </div>
 
-        <div className="form-box">
-          <label className="form-label">Form/Dosage</label>
-          <select name="dosage_form" value={formData.dosage_form} onChange={handleChange} className="form-input-clean">
-            {['Solid', 'Liquid', 'Cream', 'Injection', 'Other'].map(f => (
-              <option key={f} value={f}>{f}</option>
-            ))}
+        <div className="form-group">
+          <label className="form-label">Category</label>
+          <select name="category_id" value={formData.category_id} onChange={handleChange} className="form-input">
+            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </div>
 
-        <div className="form-box full-width">
-          <label className="form-label">Product Description</label>
-          <textarea name="description" value={formData.description} onChange={handleChange} className="form-input-clean" style={{ minHeight: '80px', resize: 'none' }} placeholder="Product details and usage..." />
-        </div>
-
-        <div className="form-box">
-          <label className="form-label">Retail Price ($)</label>
-          <input name="price" type="number" step="0.01" value={formData.price} onChange={handleChange} className="form-input-clean" />
-        </div>
-
-        <div className="form-box">
-          <label className="form-label">Units in Stock</label>
-          <input name="units_in_stock" type="number" value={formData.units_in_stock} onChange={handleChange} className="form-input-clean" />
-        </div>
-
-        <div className="form-box">
-          <label className="form-label">Minimum Purchase Quantity</label>
-          <input name="min_quantity" type="number" min="1" value={formData.min_quantity} onChange={handleChange} className="form-input-clean" placeholder="At least how many must be bought?" />
-        </div>
-
-        <div className="form-box full-width">
-          <label className="form-label">Compare-at Price ($)</label>
-          <input name="compare_at_price" type="number" step="0.01" value={formData.compare_at_price} onChange={handleChange} className="form-input-clean" placeholder="Optional — shown as a strikethrough sale price" />
+        <div className="form-group">
+          <label className="form-label">Dosage Form</label>
+          <select name="dosage_form" value={formData.dosage_form} onChange={handleChange} className="form-input">
+            {['Solid', 'Liquid', 'Cream', 'Injection', 'Other'].map(f => <option key={f} value={f}>{f}</option>)}
+          </select>
         </div>
 
         {(formData.dosage_form === 'Liquid' || formData.dosage_form === 'Cream') && (
-          <div className="form-box">
-            <label className="form-label">Dosage/Volume (ml)</label>
-            <input name="volume_ml" type="number" value={formData.volume_ml} onChange={handleChange} className="form-input-clean" />
+          <div className="form-group">
+            <label className="form-label">Volume (ml)</label>
+            <input name="volume_ml" type="number" min="0" value={formData.volume_ml} onChange={handleChange} className="form-input" />
           </div>
         )}
-        <div className="form-box">
-          <label className="form-label">Manufacturer</label>
-          <input name="manufacturer" value={formData.manufacturer} onChange={handleChange} className="form-input-clean" />
-        </div>
-        <div className="form-box full-width">
-          <label className="form-label">Expiry Date</label>
-          <input name="expiry_date" type="date" value={formData.expiry_date} onChange={handleChange} className="form-input-clean" />
+
+        <div className="form-group full-width">
+          <label className="form-label">Short Description</label>
+          <input name="short_description" value={formData.short_description} onChange={handleChange} className="form-input" placeholder="One line shown on product cards" />
         </div>
 
-        <div className="form-box full-width">
+        <div className="form-group full-width">
+          <label className="form-label">Full Description</label>
+          <textarea name="description" value={formData.description} onChange={handleChange} className="form-input" style={{ minHeight: '100px', resize: 'vertical' }} placeholder="Usage, dosage, warnings..." />
+        </div>
+
+        <div className="form-group full-width">
           <label className="form-label">Active Ingredient</label>
-          <input name="top_notes" value={formData.top_notes} onChange={handleChange} className="form-input-clean" />
+          <input name="top_notes" value={formData.top_notes} onChange={handleChange} className="form-input" />
         </div>
 
-        <div className="form-box full-width" style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: '1.5rem' }}>
+        <div className="form-group">
+          <label className="form-label">Manufacturer</label>
+          <input name="manufacturer" value={formData.manufacturer} onChange={handleChange} className="form-input" />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Expiry Date</label>
+          <input name="expiry_date" type="date" value={formData.expiry_date} onChange={handleChange} className="form-input" />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Price ($)</label>
+          <input name="price" type="number" step="0.01" min="0" value={formData.price} onChange={handleChange} className="form-input" required />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Compare-at Price ($)</label>
+          <input name="compare_at_price" type="number" step="0.01" min="0" value={formData.compare_at_price} onChange={handleChange} className="form-input" placeholder="Optional strikethrough price" />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Units in Stock</label>
+          <input name="units_in_stock" type="number" min="0" value={formData.units_in_stock} onChange={handleChange} className="form-input" />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Minimum Purchase Qty</label>
+          <input name="min_quantity" type="number" min="1" value={formData.min_quantity} onChange={handleChange} className="form-input" />
+        </div>
+      </div>
+
+      <div className="toggles-row">
+        <div className="toggle-row">
           <div>
-            <label className="form-label">Product Visibility</label>
-            <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b' }}>If disabled, this product will be hidden from customers.</p>
+            <label className="form-label">Requires Prescription</label>
+            <p>Shows an Rx notice on the product page</p>
           </div>
           <label className="switch">
-            <input 
-              type="checkbox" 
-              name="is_active" 
-              checked={formData.is_active} 
-              onChange={handleChange} 
-            />
-            <span className="slider round"></span>
+            <input type="checkbox" name="requires_prescription" checked={formData.requires_prescription} onChange={handleChange} />
+            <span className="slider" />
+          </label>
+        </div>
+        <div className="toggle-row">
+          <div>
+            <label className="form-label">Featured</label>
+            <p>Shown in the homepage highlights</p>
+          </div>
+          <label className="switch">
+            <input type="checkbox" name="is_featured" checked={formData.is_featured} onChange={handleChange} />
+            <span className="slider" />
+          </label>
+        </div>
+        <div className="toggle-row">
+          <div>
+            <label className="form-label">Visible</label>
+            <p>Hidden products don't show in the shop</p>
+          </div>
+          <label className="switch">
+            <input type="checkbox" name="is_active" checked={formData.is_active} onChange={handleChange} />
+            <span className="slider" />
           </label>
         </div>
       </div>
 
-      <style>{`
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #2563eb; }
-        input:focus + .slider { box-shadow: 0 0 1px #2563eb; }
-        input:checked + .slider:before { transform: translateX(24px); }
-      `}</style>
-
-      <div className="upload-section">
-        <label className="upload-content">
+      <div className="upload-dropzone">
+        <label>
           <input type="file" multiple accept="image/*" onChange={handleImageUpload} ref={fileInputRef} style={{ display: 'none' }} disabled={uploading} />
-          <div className="upload-icon">☁️</div>
-          <div className="upload-text">
-            <h4>Choose product photos or drag & drop here.</h4>
-            <p>JPEG, PNG - Up to 50MB (Max 4 images)</p>
-          </div>
-          <button type="button" className="btn-reset" style={{ marginTop: '1rem' }}>Browse files</button>
+          <p>{uploading ? 'Uploading...' : 'JPEG or PNG, up to 4 images'}</p>
+          <span className="btn-secondary" style={{ cursor: 'pointer' }}>Browse files</span>
         </label>
       </div>
 
-      <div className="image-grid-premium">
-        {formData.image_urls.map((url, idx) => (
-          <div key={idx} className="img-preview-premium">
-            <img src={url} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            <button type="button" onClick={() => removeImage(idx)} className="remove-img-btn" style={{ top: '12px', right: '12px' }}>×</button>
-          </div>
-        ))}
-      </div>
+      {formData.image_urls.length > 0 && (
+        <div className="image-grid">
+          {formData.image_urls.map((url, idx) => (
+            <div key={idx} className="image-tile">
+              <img src={url} alt="preview" />
+              <button type="button" onClick={() => removeImage(idx)}>&times;</button>
+            </div>
+          ))}
+        </div>
+      )}
 
-      <div className="footer-actions" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '3rem', borderTop: '2px solid #f8fafc', paddingTop: '2rem' }}>
-        {initialData && onDelete ? (
-          <button 
-            type="button" 
-            className="btn-danger-krafts" 
-            onClick={() => {
-              console.log('Delete Record button clicked in ProductForm');
-              if (onDelete) onDelete();
-            }}
-            style={{ 
-              background: '#fff5f5', 
-              color: '#fa5252', 
-              border: 'none', 
-              padding: '0.8rem 1.6rem', 
-              borderRadius: '12px', 
-              fontWeight: 700, 
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-          >
-            Delete Record
+      <div className="form-footer">
+        {initialData ? (
+          <button type="button" onClick={handleDelete} disabled={deleting} className="btn-secondary" style={{ borderColor: 'var(--error)', color: 'var(--error)' }}>
+            {deleting ? 'Removing...' : 'Delete Product'}
           </button>
-        ) : (
-          <div /> // Placeholder to keep Save on the right
-        )}
-        
-        <button 
-          type="submit" 
-          className="btn-save-krafts" 
-          disabled={loading || uploading}
-          style={{ 
-            background: '#2563eb', 
-            color: 'white', 
-            border: 'none', 
-            padding: '0.8rem 2.5rem', 
-            borderRadius: '12px', 
-            fontWeight: 800, 
-            cursor: 'pointer',
-            boxShadow: '0 4px 14px rgba(37, 99, 235, 0.25)',
-            transition: 'all 0.2s'
-          }}
-        >
-          {loading ? 'Processing...' : 'Save Changes'}
+        ) : <span />}
+
+        <button type="submit" className="btn-primary" disabled={loading || uploading}>
+          {loading ? 'Saving...' : initialData ? 'Save Changes' : 'Create Product'}
         </button>
       </div>
     </form>

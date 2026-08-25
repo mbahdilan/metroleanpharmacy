@@ -28,11 +28,10 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   if (!product) return <div>Record not found.</div>;
 
   return (
-    <div style={{ paddingTop: '100px', paddingBottom: '100px' }} className="section">
-      <div style={{ marginBottom: '2rem' }}>
-        <Link href="/admin" style={{ color: 'var(--primary)', fontWeight: 700 }}>
-          ← Back to Inventory
-        </Link>
+    <div style={{ paddingTop: '80px', paddingBottom: '100px' }} className="section">
+      <div style={{ marginBottom: '2.5rem' }}>
+        <Link href="/admin" style={{ color: 'var(--primary)', fontWeight: 700 }}>← Back to Products</Link>
+        <h1 style={{ marginTop: '1rem' }}>Edit Product</h1>
       </div>
       <ProductForm initialData={product} />
     </div>
