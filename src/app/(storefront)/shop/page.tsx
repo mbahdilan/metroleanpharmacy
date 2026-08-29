@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { supabase, Product, Category } from '@/lib/supabase';
+import { supabase, Product } from '@/lib/supabase';
 import ProductCard from '@/components/ProductCard';
 
 export default function ShopPage() {
@@ -15,8 +14,6 @@ export default function ShopPage() {
 
 function ShopContent() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   
@@ -29,33 +26,14 @@ function ShopContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(12);
 
-  const searchParams = useSearchParams();
-  const categorySlug = searchParams.get('category');
-
   useEffect(() => {
     async function fetchData() {
       try {
-        const [{ data: cats, error: catsError }, { data: prods, error: prodsError }] = await Promise.all([
-          supabase.from('categories').select('*').order('name'),
-          supabase.from('products').select('*').eq('is_active', true).order('name'),
-        ]);
-        
-        if (catsError) console.error('Categories fetch error:', catsError);
+        const { data: prods, error: prodsError } = await supabase
+          .from('products').select('*').eq('is_active', true).order('name');
+
         if (prodsError) console.error('Products fetch error:', prodsError);
-        
-        const categoryList = cats || [];
-        setCategories(categoryList);
         setProducts(prods || []);
-        
-        if (categorySlug) {
-          const matchingCat = categoryList.find(c => 
-            c.slug.toLowerCase() === categorySlug.toLowerCase() || 
-            c.name.toLowerCase() === categorySlug.toLowerCase()
-          );
-          if (matchingCat) {
-            setSelectedCategory(matchingCat.id);
-          }
-        }
       } catch (err) {
         console.error('Unexpected error fetching shop data:', err);
       } finally {
@@ -63,7 +41,7 @@ function ShopContent() {
       }
     }
     fetchData();
-  }, [categorySlug]);
+  }, []);
 
   // Responsive items per page detection
   useEffect(() => {
@@ -84,21 +62,20 @@ function ShopContent() {
   // Reset to page 1 on filter or search change
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedCategory, searchTerm, sortBy, priceRange, selectedDosageForms, selectedTherapeutics]);
+  }, [searchTerm, sortBy, priceRange, selectedDosageForms, selectedTherapeutics]);
 
   const filteredAndSorted = products
     .filter(p => {
-      const matchesCategory = selectedCategory === 'all' || p.category_id === selectedCategory;
-      const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             (p.short_description || '').toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       const priceValue = parseFloat(p.price);
       const matchesPrice = priceValue >= priceRange[0] && priceValue <= priceRange[1];
-      
+
       const matchesDosageForm = selectedDosageForms.length === 0 || selectedDosageForms.includes(p.dosage_form);
       const matchesTherapeutic = selectedTherapeutics.length === 0 || selectedTherapeutics.includes(p.therapeutic_class);
 
-      return matchesCategory && matchesSearch && matchesPrice && matchesDosageForm && matchesTherapeutic;
+      return matchesSearch && matchesPrice && matchesDosageForm && matchesTherapeutic;
     })
     .sort((a, b) => {
       if (sortBy === 'price-low-high') return parseFloat(a.price) - parseFloat(b.price);
@@ -126,7 +103,6 @@ function ShopContent() {
   };
 
   const clearFilters = () => {
-    setSelectedCategory('all');
     setSelectedDosageForms([]);
     setSelectedTherapeutics([]);
     setPriceRange([0, 5000]);
@@ -556,24 +532,6 @@ function ShopContent() {
             </svg>
           </button>
         </div>
-
-        <div className="mobile-category-nav">
-          <div 
-            className={`mobile-cat-pill ${selectedCategory === 'all' ? 'active' : ''}`}
-            onClick={() => setSelectedCategory('all')}
-          >
-            All
-          </div>
-          {categories.map(cat => (
-            <div 
-              key={cat.id} 
-              className={`mobile-cat-pill ${selectedCategory === cat.id ? 'active' : ''}`}
-              onClick={() => setSelectedCategory(cat.id)}
-            >
-              {cat.name}
-            </div>
-          ))}
-        </div>
       </div>
 
       {/* Custom Hero Section */}
@@ -635,29 +593,6 @@ function ShopContent() {
         {/* Sidebar Filters Dropdown */}
         <div className={`filter-dropdown-overlay ${isFilterOpen ? 'open' : ''}`}>
           <aside className="shop-sidebar">
-          <div className="filter-section">
-            <span className="filter-title">Category</span>
-            <ul className="category-list">
-              <li 
-                className={`category-item ${selectedCategory === 'all' ? 'active' : ''}`}
-                onClick={() => setSelectedCategory('all')}
-              >
-                <span>All Product</span>
-                <span className="cat-count">{products.length}</span>
-              </li>
-              {categories.map(cat => (
-                <li 
-                  key={cat.id} 
-                  className={`category-item ${selectedCategory === cat.id ? 'active' : ''}`}
-                  onClick={() => setSelectedCategory(cat.id)}
-                >
-                  <span>{cat.name}</span>
-                  <span className="cat-count">{products.filter(p => p.category_id === cat.id).length}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
           <div className="filter-section">
             <span className="filter-title">Sort By Price</span>
             <select 

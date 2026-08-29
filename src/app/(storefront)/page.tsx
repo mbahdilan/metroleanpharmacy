@@ -49,7 +49,7 @@ export default async function HomePage() {
             <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', marginBottom: '2.5rem', lineHeight: 1.7, maxWidth: '450px' }}>
               From decongestants to sore-throat relief, shop trusted over-the-counter remedies to help you feel like yourself again.
             </p>
-            <Link href="/shop?category=cold-flu" className="btn-secondary">Shop Cold & Flu</Link>
+            <Link href="/shop" className="btn-secondary">Shop Cold & Flu</Link>
           </div>
           <div style={{ background: 'var(--bg-card)', borderRadius: '1rem', padding: '1rem', display: 'flex', justifyContent: 'center', overflow: 'hidden' }}>
             <img src="/images/categories/cold-flu.png" alt="Cold and flu relief products" style={{ width: '100%', height: 'auto', borderRadius: '0.5rem', boxShadow: 'var(--shadow-lg)', objectFit: 'cover' }} />
@@ -71,7 +71,7 @@ export default async function HomePage() {
             <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', marginBottom: '2.5rem', lineHeight: 1.7, maxWidth: '450px' }}>
               Support your immune system and everyday wellness with our range of vitamins and supplements, backed by clear, honest labeling.
             </p>
-            <Link href="/shop?category=vitamins-supplements" className="btn-secondary">Shop Vitamins</Link>
+            <Link href="/shop" className="btn-secondary">Shop Vitamins</Link>
           </div>
         </div>
       </section>

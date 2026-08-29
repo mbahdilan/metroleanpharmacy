@@ -3,7 +3,7 @@
 import { useEffect, useState, use, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { supabase, Product, Category } from '@/lib/supabase';
+import { supabase, Product } from '@/lib/supabase';
 import { useCart } from '@/context/CartContext';
 import { useCurrency } from '@/context/CurrencyContext';
 import './pdp.css';
@@ -13,7 +13,6 @@ type TabType = 'description' | 'details' | 'comments';
 export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
   const [product, setProduct] = useState<Product | null>(null);
-  const [category, setCategory] = useState<Category | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -47,21 +46,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
           setSelectedImage(currentProduct.image_urls?.[0] || null);
           setSelectedImageIndex(0);
 
-          // Fetch category
-          if (currentProduct.category_id) {
-            const { data: cat } = await supabase
-              .from('categories')
-              .select('*')
-              .eq('id', currentProduct.category_id)
-              .single();
-            setCategory(cat);
-          }
-
           // Related products
           const { data: related } = await supabase
             .from('products')
             .select('*')
-            .or(`category_id.eq.${currentProduct.category_id},therapeutic_class.eq.${currentProduct.therapeutic_class}`)
+            .eq('therapeutic_class', currentProduct.therapeutic_class)
             .neq('id', currentProduct.id)
             .eq('is_active', true)
             .limit(4);
@@ -245,18 +234,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
           <nav className="pdp-breadcrumb">
             <Link href="/shop">Shop</Link>
             <span className="separator">›</span>
-            {category && (
-              <>
-                <Link href={`/shop?category=${category.slug}`}>{category.name}</Link>
-                <span className="separator">›</span>
-              </>
-            )}
             <span className="current">{product.name}</span>
           </nav>
 
           {/* Category Label */}
           <span className="pdp-category-label">
-            {category?.name || product.therapeutic_class || 'Shop'}
+            {product.therapeutic_class || 'Shop'}
           </span>
 
           {/* Product Title */}
@@ -353,7 +336,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                 </div>
                 <div className="pdp-detail-item">
                   <span className="pdp-detail-label">Active Ingredient</span>
-                  <span className="pdp-detail-value">{product.top_notes || '—'}</span>
+                  <span className="pdp-detail-value">{product.active_ingredient || '—'}</span>
                 </div>
                 {product.manufacturer && (
                   <div className="pdp-detail-item">
@@ -361,10 +344,16 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                     <span className="pdp-detail-value">{product.manufacturer}</span>
                   </div>
                 )}
-                {product.expiry_date && (
+                {product.storage_instructions && (
                   <div className="pdp-detail-item">
-                    <span className="pdp-detail-label">Expiry Date</span>
-                    <span className="pdp-detail-value">{new Date(product.expiry_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}</span>
+                    <span className="pdp-detail-label">Storage Instructions</span>
+                    <span className="pdp-detail-value">{product.storage_instructions}</span>
+                  </div>
+                )}
+                {product.side_effects && (
+                  <div className="pdp-detail-item">
+                    <span className="pdp-detail-label">Side Effects</span>
+                    <span className="pdp-detail-value">{product.side_effects}</span>
                   </div>
                 )}
               </div>

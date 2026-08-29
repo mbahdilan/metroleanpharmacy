@@ -27,7 +27,7 @@ export default function ProductCard({ product }: { product: Product }) {
   // Mocking ratings and category tag for the "Stuffus" aesthetic
   const mockRating = (Math.random() * (5.0 - 4.2) + 4.2).toFixed(1);
   const mockReviews = Math.floor(Math.random() * 2000) + 100;
-  const categoryTag = product.therapeutic_class || product.scent_family || 'Other';
+  const categoryTag = product.therapeutic_class || 'Other';
 
   return (
     <div className="stuffus-product-card">

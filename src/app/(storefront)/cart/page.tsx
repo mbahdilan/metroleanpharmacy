@@ -66,8 +66,8 @@ export default function CartPage() {
                       {/* Product Detail Card */}
                       <div className="cart-col-product">
                         <div className="cart-product-thumb">
-                          {item.product.image_url ? (
-                            <img src={item.product.image_url} alt={item.product.name} />
+                          {item.product.image_urls?.[0] ? (
+                            <img src={item.product.image_urls[0]} alt={item.product.name} />
                           ) : (
                             <span style={{ fontSize: '2rem' }}>📦</span>
                           )}

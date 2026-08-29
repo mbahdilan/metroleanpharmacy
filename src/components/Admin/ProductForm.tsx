@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase, Product, Category } from '@/lib/supabase';
+import { supabase, Product } from '@/lib/supabase';
 
 const slugify = (s: string) =>
   s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -12,22 +12,23 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
     slug: initialData?.slug || '',
-    category_id: initialData?.category_id || '',
+    sku: initialData?.sku || '',
     dosage_form: initialData?.dosage_form || 'Solid',
     short_description: initialData?.short_description || '',
     description: initialData?.description || '',
-    top_notes: initialData?.top_notes || '',
+    active_ingredient: initialData?.active_ingredient || '',
+    therapeutic_class: initialData?.therapeutic_class || '',
+    storage_instructions: initialData?.storage_instructions || '',
+    side_effects: initialData?.side_effects || '',
     manufacturer: initialData?.manufacturer || '',
     price: initialData?.price || '',
     compare_at_price: initialData?.compare_at_price || '',
     units_in_stock: initialData?.units_in_stock ?? 0,
     min_quantity: initialData?.min_quantity ?? 1,
     volume_ml: initialData?.volume_ml ?? 0,
-    expiry_date: initialData?.expiry_date || '',
     requires_prescription: initialData?.requires_prescription || false,
     is_featured: initialData?.is_featured || false,
     is_active: initialData?.is_active ?? true,
@@ -36,17 +37,6 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
 
   const [deletedImages, setDeletedImages] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    async function fetchCategories() {
-      const { data } = await supabase.from('categories').select('*').order('name');
-      setCategories(data || []);
-      if (data && data.length > 0 && !formData.category_id) {
-        setFormData(prev => ({ ...prev, category_id: prev.category_id || data[0].id }));
-      }
-    }
-    fetchCategories();
-  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target as any;
@@ -123,18 +113,20 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
 
     const payload = {
       ...formData,
-      price: parseFloat(formData.price as string),
+      slug: formData.slug || slugify(formData.name) || `product-${Date.now()}`,
+      price: parseFloat(formData.price as string) || 0,
       compare_at_price: formData.compare_at_price ? parseFloat(formData.compare_at_price as string) : null,
       volume_ml: parseInt(formData.volume_ml as any) || 0,
       units_in_stock: parseInt(formData.units_in_stock as any) || 0,
       min_quantity: parseInt(formData.min_quantity as any) || 1,
-      category_id: formData.category_id || null,
-      expiry_date: formData.expiry_date || null,
       manufacturer: formData.manufacturer || null,
       short_description: formData.short_description || null,
       description: formData.description || null,
-      top_notes: formData.top_notes || null,
-      image_url: formData.image_urls[0] || null,
+      active_ingredient: formData.active_ingredient || null,
+      sku: formData.sku || null,
+      therapeutic_class: formData.therapeutic_class || null,
+      storage_instructions: formData.storage_instructions || null,
+      side_effects: formData.side_effects || null,
       image_urls: formData.image_urls,
     };
 
@@ -229,14 +221,7 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
 
         <div className="form-group">
           <label className="form-label">URL Slug</label>
-          <input name="slug" value={formData.slug} onChange={handleChange} className="form-input" placeholder="amoxicillin-500mg" required />
-        </div>
-
-        <div className="form-group">
-          <label className="form-label">Category</label>
-          <select name="category_id" value={formData.category_id} onChange={handleChange} className="form-input">
-            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </select>
+          <input name="slug" value={formData.slug} onChange={handleChange} className="form-input" placeholder="auto-generated from name if left blank" />
         </div>
 
         <div className="form-group">
@@ -265,7 +250,27 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
 
         <div className="form-group full-width">
           <label className="form-label">Active Ingredient</label>
-          <input name="top_notes" value={formData.top_notes} onChange={handleChange} className="form-input" />
+          <input name="active_ingredient" value={formData.active_ingredient} onChange={handleChange} className="form-input" />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">SKU</label>
+          <input name="sku" value={formData.sku} onChange={handleChange} className="form-input" placeholder="e.g., AMOX-500-30" />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Drug Class</label>
+          <input name="therapeutic_class" value={formData.therapeutic_class} onChange={handleChange} className="form-input" placeholder="e.g., Antibiotic" />
+        </div>
+
+        <div className="form-group full-width">
+          <label className="form-label">Storage Instructions</label>
+          <textarea name="storage_instructions" value={formData.storage_instructions} onChange={handleChange} className="form-input" style={{ minHeight: '80px', resize: 'vertical' }} placeholder="e.g., Store below 25°C, away from light" />
+        </div>
+
+        <div className="form-group full-width">
+          <label className="form-label">Side Effects</label>
+          <textarea name="side_effects" value={formData.side_effects} onChange={handleChange} className="form-input" style={{ minHeight: '80px', resize: 'vertical' }} placeholder="Common side effects to note for customers" />
         </div>
 
         <div className="form-group">
@@ -274,13 +279,8 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
         </div>
 
         <div className="form-group">
-          <label className="form-label">Expiry Date</label>
-          <input name="expiry_date" type="date" value={formData.expiry_date} onChange={handleChange} className="form-input" />
-        </div>
-
-        <div className="form-group">
           <label className="form-label">Price ($)</label>
-          <input name="price" type="number" step="0.01" min="0" value={formData.price} onChange={handleChange} className="form-input" required />
+          <input name="price" type="number" step="0.01" min="0" value={formData.price} onChange={handleChange} className="form-input" placeholder="Defaults to 0 if left blank" />
         </div>
 
         <div className="form-group">

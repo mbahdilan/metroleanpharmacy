@@ -244,7 +244,7 @@ function AdminDashboardContent() {
                   <tr key={product.id}>
                     <td>
                       <div className="product-cell">
-                        <img className="product-thumb" src={product.image_urls?.[0] || product.image_url || ''} alt="" />
+                        <img className="product-thumb" src={product.image_urls?.[0] || ''} alt="" />
                         <div>
                           <h4>{product.name}</h4>
                           <p>REF: {product.id.substring(0, 8)}</p>
