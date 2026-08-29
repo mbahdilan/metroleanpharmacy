@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ARTICLES } from '@/lib/articles';
+import { supabase, BlogPost } from '@/lib/supabase';
 
 export const metadata: Metadata = {
   title: 'Browse by Topic - Metrolean-Pharma Health Tips',
@@ -14,8 +14,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function GuidesPage() {
-  const categories = Array.from(new Set(ARTICLES.map((a) => a.category)));
+async function getPosts(): Promise<BlogPost[]> {
+  const { data } = await supabase
+    .from('blog_posts')
+    .select('*')
+    .eq('is_published', true)
+    .order('created_at', { ascending: false });
+  return data || [];
+}
+
+export default async function GuidesPage() {
+  const articles = await getPosts();
+  const categories = Array.from(new Set(articles.map((a) => a.category)));
 
   return (
     <div style={{ padding: '8rem 2rem 4rem', maxWidth: '1200px', margin: '0 auto', minHeight: '80vh' }}>
@@ -31,7 +41,7 @@ export default function GuidesPage() {
           <div key={category} style={{ marginBottom: '3rem' }}>
             <h2 style={{ fontSize: '1.5rem', color: 'var(--accent)', marginBottom: '1.5rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border)' }}>{category}</h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
-              {ARTICLES.filter((a) => a.category === category).map((article) => (
+              {articles.filter((a) => a.category === category).map((article) => (
                 <Link
                   key={article.slug}
                   href={`/blog/${article.slug}`}

@@ -1,17 +1,61 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase, Product } from '@/lib/supabase';
+import Modal from '@/components/Modal';
 
 export default function AdminDashboard() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="spinner" /></div>}>
+      <AdminDashboardContent />
+    </Suspense>
+  );
+}
+
+function AdminDashboardContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [stats, setStats] = useState({ totalSales: 0, totalOrders: 0, activeProducts: 0, outOfStock: 0 });
+
+  const [blogGateOpen, setBlogGateOpen] = useState(false);
+  const [blogPasscode, setBlogPasscode] = useState('');
+  const [blogGateError, setBlogGateError] = useState<string | null>(null);
+  const [blogGateLoading, setBlogGateLoading] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get('blogGate') === 'required') setBlogGateOpen(true);
+  }, [searchParams]);
+
+  const closeBlogGate = () => {
+    setBlogGateOpen(false);
+    setBlogGateError(null);
+    setBlogPasscode('');
+  };
+
+  const handleBlogGateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBlogGateLoading(true);
+    setBlogGateError(null);
+    const res = await fetch('/api/blog-gate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ passcode: blogPasscode }),
+    });
+    setBlogGateLoading(false);
+    if (res.ok) {
+      closeBlogGate();
+      router.push('/admin/blog');
+    } else {
+      const data = await res.json().catch(() => ({}));
+      setBlogGateError(data.error || 'Incorrect passcode');
+    }
+  };
 
   useEffect(() => {
     async function load() {
@@ -113,8 +157,35 @@ export default function AdminDashboard() {
 
       <nav className="admin-topbar">
         <div className="admin-logo">Metrolean-Pharma <span>Admin</span></div>
-        <button className="btn-secondary" onClick={handleLogout}>Log Out</button>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <button className="btn-secondary" onClick={() => setBlogGateOpen(true)}>Blog Posts</button>
+          <button className="btn-secondary" onClick={handleLogout}>Log Out</button>
+        </div>
       </nav>
+
+      <Modal isOpen={blogGateOpen} onClose={closeBlogGate} title="Enter Blog Passcode">
+        <form onSubmit={handleBlogGateSubmit}>
+          {blogGateError && (
+            <div className="warning-banner" style={{ padding: '0.75rem', marginBottom: '1.5rem' }}>
+              <span className="warning-text" style={{ fontSize: '0.85rem' }}>{blogGateError}</span>
+            </div>
+          )}
+          <div className="form-group full-width">
+            <label className="form-label">Passcode</label>
+            <input
+              type="password"
+              className="form-input"
+              value={blogPasscode}
+              onChange={(e) => setBlogPasscode(e.target.value)}
+              autoFocus
+              required
+            />
+          </div>
+          <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '1.5rem' }} disabled={blogGateLoading}>
+            {blogGateLoading ? 'Checking...' : 'Unlock'}
+          </button>
+        </form>
+      </Modal>
 
       <main className="admin-main">
         <div className="stat-grid">

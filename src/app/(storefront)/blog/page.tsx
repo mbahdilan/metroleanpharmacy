@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ARTICLES } from '@/lib/articles';
+import { supabase, BlogPost } from '@/lib/supabase';
 
 export const metadata: Metadata = {
   title: 'Health Guides - Metrolean-Pharma Health Tips',
@@ -14,8 +14,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function BlogPage() {
-  const articles = [...ARTICLES].sort((a, b) => (a.date < b.date ? 1 : -1));
+async function getPosts(): Promise<BlogPost[]> {
+  const { data } = await supabase
+    .from('blog_posts')
+    .select('*')
+    .eq('is_published', true)
+    .order('created_at', { ascending: false });
+  return data || [];
+}
+
+export default async function BlogPage() {
+  const articles = await getPosts();
 
   return (
     <div style={{ padding: '8rem 2rem 4rem', maxWidth: '1000px', margin: '0 auto', minHeight: '80vh' }}>
@@ -27,16 +36,20 @@ export default function BlogPage() {
         <Link href="/guides" style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '0.9rem' }}>Browse by topic &rarr;</Link>
       </header>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-        {articles.map((article) => (
-          <article key={article.slug} style={{ padding: '2rem', background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase' }}>{article.category}</span>
-            <h2 style={{ fontSize: '1.5rem', color: 'var(--text-primary)', margin: '0.5rem 0' }}>{article.title}</h2>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: 1.6 }}>{article.excerpt}</p>
-            <Link href={`/blog/${article.slug}`} style={{ color: 'var(--accent)', fontWeight: 700 }}>Read Full Article &rarr;</Link>
-          </article>
-        ))}
-      </div>
+      {articles.length === 0 ? (
+        <p style={{ color: 'var(--text-muted)' }}>New guides coming soon.</p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+          {articles.map((article) => (
+            <article key={article.slug} style={{ padding: '2rem', background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
+              <span style={{ fontSize: '0.85rem', color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase' }}>{article.category}</span>
+              <h2 style={{ fontSize: '1.5rem', color: 'var(--text-primary)', margin: '0.5rem 0' }}>{article.title}</h2>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: 1.6 }}>{article.excerpt}</p>
+              <Link href={`/blog/${article.slug}`} style={{ color: 'var(--accent)', fontWeight: 700 }}>Read Full Article &rarr;</Link>
+            </article>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

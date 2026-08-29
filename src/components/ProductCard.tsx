@@ -5,16 +5,6 @@ import { Product } from '@/lib/supabase';
 import { useCart } from '@/context/CartContext';
 import { useCurrency } from '@/context/CurrencyContext';
 
-const STRAIN_ICONS: Record<string, string> = {
-  Respiratory: '🫁',
-  Strains: '🌿',
-  Relaxatives: '🧘',
-  Vitamins: '🍎',
-  General: '💊',
-  Calming: '🍃',
-  Energy: '⚡',
-};
-
 export default function ProductCard({ product }: { product: Product }) {
   const { addToCart, setCartOpen } = useCart();
   const { format } = useCurrency();
@@ -224,5 +214,3 @@ export default function ProductCard({ product }: { product: Product }) {
     </div>
   );
 }
-
-export { STRAIN_ICONS };

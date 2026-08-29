@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase, Product, Category } from '@/lib/supabase';
 import { useCart } from '@/context/CartContext';
-import { STRAIN_ICONS } from '@/components/ProductCard';
 import { useCurrency } from '@/context/CurrencyContext';
 import './pdp.css';
 
@@ -148,7 +147,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
     );
   }
 
-  const icon = (product.scent_family && STRAIN_ICONS[product.scent_family]) || '💊';
+  const icon = '💊';
   const images = product.image_urls && product.image_urls.length > 0 ? product.image_urls : [];
   const totalPrice = (parseFloat(product.price) * quantity).toFixed(2);
   const unitPrice = parseFloat(product.price).toFixed(2);
@@ -452,7 +451,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                     {p.image_urls?.[0] ? (
                       <img src={p.image_urls[0]} alt={p.name} />
                     ) : (
-                      <span style={{ fontSize: '2.5rem' }}>{(p.scent_family && STRAIN_ICONS[p.scent_family]) || '💊'}</span>
+                      <span style={{ fontSize: '2.5rem' }}>💊</span>
                     )}
                   </div>
                   <div className="pdp-related-info">

@@ -47,3 +47,17 @@ export type CartItem = {
   product: Product;
   quantity: number;
 };
+
+export type BlogPost = {
+  id: string;
+  slug: string;
+  title: string;
+  category: string;
+  excerpt: string;
+  content_html: string;
+  featured_image: string | null;
+  is_published: boolean;
+  is_safety_content: boolean;
+  created_at: string;
+  updated_at: string;
+};
