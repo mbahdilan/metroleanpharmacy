@@ -1,14 +1,28 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function TawkTo() {
-  useEffect(() => {
-    // Tawk.to Script
-    var Tawk_API = (window as any).Tawk_API || {};
-    var Tawk_LoadStart = new Date();
-    (window as any).Tawk_API = Tawk_API;
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith('/admin');
+  const loaded = useRef(false);
 
+  useEffect(() => {
+    const Tawk_API = ((window as any).Tawk_API ||= {});
+
+    if (isAdmin) {
+      Tawk_API.hideWidget?.();
+      return;
+    }
+
+    if (loaded.current) {
+      Tawk_API.showWidget?.();
+      return;
+    }
+    loaded.current = true;
+
+    // Tawk.to Script
     var s1 = document.createElement('script');
     var s0 = document.getElementsByTagName('script')[0];
     s1.async = true;
@@ -16,12 +30,7 @@ export default function TawkTo() {
     s1.charset = 'UTF-8';
     s1.setAttribute('crossorigin', '*');
     s0?.parentNode?.insertBefore(s1, s0);
-
-    return () => {
-      // Cleanup on unmount
-      s1.remove();
-    };
-  }, []);
+  }, [isAdmin]);
 
   return null;
 }

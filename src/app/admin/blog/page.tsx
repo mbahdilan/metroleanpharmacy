@@ -44,9 +44,10 @@ export default function AdminBlogDashboard() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-main)' }}>
       <style>{`
-        .admin-topbar { position: sticky; top: 0; z-index: 10; background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 0 2rem; height: 72px; display: flex; align-items: center; justify-content: space-between; }
-        .admin-logo { font-size: 1.2rem; font-weight: 800; color: var(--text-primary); }
+        .admin-topbar { position: sticky; top: 0; z-index: 10; background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 0 2rem; height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+        .admin-logo { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 1.2rem; font-weight: 800; color: var(--text-primary); }
         .admin-logo span { color: var(--primary); }
+        .admin-topbar > a, .admin-topbar > div:last-child { flex-shrink: 0; }
         .admin-main { max-width: 1240px; margin: 0 auto; padding: 2.5rem 2rem 5rem; }
 
         .table-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
@@ -81,9 +82,15 @@ export default function AdminBlogDashboard() {
 
         @media (max-width: 700px) {
           .admin-topbar { padding: 0 1.25rem; }
+          .admin-logo { font-size: 1rem; }
           .admin-main { padding: 1.5rem 1.25rem 3rem; }
-          .product-table-card { overflow-x: auto; }
-          .product-table { min-width: 640px; }
+
+          .product-table thead { display: none; }
+          .product-table, .product-table tbody, .product-table tr, .product-table td { display: block; width: 100%; }
+          .product-table tr { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); }
+          .product-table td { padding: 0.35rem 0; border-bottom: none; }
+          .product-table td[data-label]::before { content: attr(data-label); display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.15rem; }
+          .row-actions { justify-content: flex-start; }
         }
       `}</style>
 
@@ -129,9 +136,9 @@ export default function AdminBlogDashboard() {
                         </div>
                       </div>
                     </td>
-                    <td>{post.category}</td>
-                    <td>{new Date(post.created_at).toLocaleDateString()}</td>
-                    <td>
+                    <td data-label="Category">{post.category}</td>
+                    <td data-label="Date">{new Date(post.created_at).toLocaleDateString()}</td>
+                    <td data-label="Status">
                       <span className={`badge ${post.is_published ? 'ok' : 'bad'}`}>{post.is_published ? 'Published' : 'Draft'}</span>
                       {post.is_safety_content && <span className="badge rx">Safety</span>}
                     </td>
