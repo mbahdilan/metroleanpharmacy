@@ -10,6 +10,7 @@ export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
   const { currency, format } = useCurrency();
   const [isOrdered, setIsOrdered] = useState(false);
+  const [showChannelPopup, setShowChannelPopup] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -26,6 +27,21 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = (e: React.FormEvent) => {
     e.preventDefault();
+    setShowChannelPopup(true);
+  };
+
+  const buildOrderMessage = () => {
+    const lines = items
+      .map(item => `${item.quantity}x ${item.product.name} - ${format(parseFloat(item.product.price) * item.quantity)}`)
+      .join('\n');
+    return `New order from ${formData.name}\n\n${lines}\n\nTotal: ${format(totalPrice)}\n\nPhone: ${formData.phone}\nDelivery: ${formData.address}, ${formData.city}, ${formData.zip}, ${formData.country}`;
+  };
+
+  const sendOrder = (channel: 'sms' | 'whatsapp') => {
+    const message = encodeURIComponent(buildOrderMessage());
+    const url = channel === 'sms'
+      ? `sms:+${BUSINESS_PHONE_TEL}?&body=${message}`
+      : `https://wa.me/${BUSINESS_PHONE_TEL}?text=${message}`;
 
     // Trigger Email Notifications
     fetch('/api/order', {
@@ -34,8 +50,15 @@ export default function CheckoutPage() {
       body: JSON.stringify({ formData, items, totalPrice, currency, convertedTotal: format(totalPrice) }),
     }).catch(err => console.error('Email notification failed:', err));
 
+    setShowChannelPopup(false);
     setIsOrdered(true);
     clearCart();
+
+    if (channel === 'whatsapp') {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } else {
+      window.location.href = url;
+    }
   };
 
   if (isOrdered) {
@@ -144,7 +167,7 @@ export default function CheckoutPage() {
           <div className="checkout-section">
             <h2 className="checkout-title">💳 How Payment Works</h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6, marginBottom: '1rem' }}>
-              We don&apos;t take payment on this page yet. After you place your order below, you&apos;ll get an email confirmation right away — then just call, text, or WhatsApp us at the number below and we&apos;ll confirm payment and delivery details with you directly.
+              We don&apos;t take payment on this page yet. After you place your order below, you&apos;ll choose to text or WhatsApp us your order — then we&apos;ll confirm payment and delivery details with you directly at the number below.
             </p>
             <div style={{
               padding: '1rem 1.25rem',
@@ -203,6 +226,41 @@ export default function CheckoutPage() {
           </p>
         </div>
       </div>
+
+      {showChannelPopup && (
+        <div
+          className="lang-overlay"
+          onClick={() => setShowChannelPopup(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Choose how to send your order"
+        >
+          <div className="lang-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: '420px' }}>
+            <div className="lang-modal-header">
+              <div className="lang-modal-globe" style={{ fontSize: '1.5rem' }}>📦</div>
+              <h2 className="lang-modal-title">Send Us Your Order</h2>
+              <p className="lang-modal-sub">
+                Choose how you&apos;d like to send your order — we&apos;ll reply there to confirm payment and delivery.
+              </p>
+            </div>
+
+            <button className="lang-modal-close" onClick={() => setShowChannelPopup(false)} aria-label="Close">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </button>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
+              <button type="button" className="btn-primary" onClick={() => sendOrder('sms')}>
+                📱 Text My Order
+              </button>
+              <button type="button" className="btn-secondary" onClick={() => sendOrder('whatsapp')}>
+                💬 WhatsApp My Order
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

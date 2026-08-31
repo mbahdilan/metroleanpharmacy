@@ -1,3 +1,2 @@
-// ponytail: placeholder business contact — replace both with the real number before launch.
-export const BUSINESS_PHONE_DISPLAY = '+1 (000) 000-0000';
-export const BUSINESS_PHONE_TEL = '10000000000';
+export const BUSINESS_PHONE_DISPLAY = '+1 (270) 245-7342';
+export const BUSINESS_PHONE_TEL = '12702457342';
