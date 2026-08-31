@@ -12,6 +12,7 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
     slug: initialData?.slug || '',
@@ -152,8 +153,11 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
       await supabase.storage.from('product-images').remove(deletedImages).catch(() => {});
     }
 
-    router.push('/admin');
-    router.refresh();
+    setSaved(true);
+    setTimeout(() => {
+      router.push('/admin');
+      router.refresh();
+    }, 1100);
   };
 
   const handleDelete = async () => {
@@ -204,6 +208,12 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
         .image-tile button { position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border-radius: 50%; background: rgba(15,23,42,0.75); color: white; font-size: 1rem; line-height: 1; }
 
         .form-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+
+        .saved-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.35); display: flex; align-items: center; justify-content: center; z-index: 9999; animation: savedFadeIn 0.2s ease-out; }
+        .saved-toast { background: var(--bg-card); border-radius: 16px; padding: 2rem 2.5rem; display: flex; flex-direction: column; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 1.1rem; box-shadow: 0 20px 40px rgba(0,0,0,0.25); animation: savedPopIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .saved-check { width: 48px; height: 48px; border-radius: 50%; background: var(--success); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        @keyframes savedFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes savedPopIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 
         @media (max-width: 700px) {
           .product-form-grid { grid-template-columns: 1fr; }
@@ -358,10 +368,19 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
           </button>
         ) : <span />}
 
-        <button type="submit" className="btn-primary" disabled={loading || uploading}>
+        <button type="submit" className="btn-primary" disabled={loading || uploading || saved}>
           {loading ? 'Saving...' : initialData ? 'Save Changes' : 'Create Product'}
         </button>
       </div>
+
+      {saved && (
+        <div className="saved-overlay">
+          <div className="saved-toast">
+            <div className="saved-check">✓</div>
+            <span>Changes Saved</span>
+          </div>
+        </div>
+      )}
     </form>
   );
 }
